@@ -1,6 +1,6 @@
 {
-	"name": "",
-	"appid": "",
+	"name": "LK-SmartCommunity",
+	"appid": "__UNI__E048D05",
 	"description": "",
 	"versionName": "1.0.0",
 	"versionCode": "100",
@@ -54,7 +54,7 @@
 
 	},
 	"mp-weixin": { /* 微信小程序特有相关 */
-		"appid": "",
+		"appid": "wx2073627ee3a2d7e4",
 		"setting": {
 			"urlCheck": false
 		},
