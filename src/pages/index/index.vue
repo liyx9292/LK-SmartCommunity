@@ -1,17 +1,107 @@
 <template>
-	<view class="content">
-		<image class="logo" src="/static/logo.png"></image>
-		<view>
-			<text class="title">{{title}}</text>
+	<view class="body">
+		<!-- 顶部banner -->
+		<swiper class="top-banner" autoplay duration="5000">
+			<swiper-item>
+				<view class="banner-item">
+					<image class="banner-image" src="" mode="widthFix"/>
+				</view>
+			</swiper-item>
+		</swiper>
+
+		<!-- 4个按钮 -->
+		<view class="button-group">
+			<view class="button-item" v-for="(item, index) in buttonGroup" :key="item.id">
+				<image class="button-image" :src="`../../static/index/index_buttons_${index + 1}.png`" />
+				<view class="button-text">
+					{{item.label}}
+				</view>
+			</view>
 		</view>
+
+		<!-- 资讯信息 -->
+		<view class="tips-block">
+			<view class="tips-container">
+				<view class="tips-left-background"/>
+				<view class="tips-left-text">
+					资讯信息
+				</view>
+				<view class="tips-right-background"/>
+				<swiper class="tips-right-swiper">
+					<swiper-item>
+						<view class="tips-item">
+							asdasdasd
+						</view>
+					</swiper-item>
+				</swiper>
+			</view>
+		</view>
+
+		<!-- 新闻列表 -->
+		<list class="news-list">
+			<cell v-for="item in newsList" :key="item.id">
+				<view class="news-item" :class="{soloImageNews: item.images.length === 1}">
+					<template v-if="item.images.length !== 1">
+						<view class="news-title">
+							<view v-if="item.isTop" class="news-title-top">
+								置顶
+							</view>
+							<text>{{item.title}}</text>
+						</view>
+						<view class="news-time-bar">
+							<image class="news-time-icon" src="../../static/icons/icon_time.png" />
+							<text>{{item.time}}</text>
+						</view>
+						<view class="news-images-container">
+							<image class="news-image-item" v-for="(imageItem, index) in item.images" :key="index" :src="imageItem"/>
+						</view>
+					</template>
+					<template v-else>
+						<view class="news-left">
+							<view class="news-title">
+								<view v-if="item.isTop" class="news-title-top">
+									置顶
+								</view>
+								<text>{{item.title}}</text>
+							</view>
+							<view class="news-time-bar">
+								<image class="news-time-icon" src="../../static/icons/icon_time.png" />
+								<text>{{item.time}}</text>
+							</view>
+						</view>
+						<view class="news-right">
+							<image class="news-image-item" :src="item.images[0]"/>
+						</view>
+					</template>
+				</view>
+			</cell>
+		</list>
+		<Tabbar/>
 	</view>
 </template>
 
 <script>
+  import Tabbar from '@/Components/Tabbar.Component.vue'
 	export default {
+		components: {
+			Tabbar,
+		},
 		data() {
 			return {
-				title: 'Hello'
+				banners: [],
+				buttonGroup: [
+					{ id: 1, label: '志愿者申请', icon: '', path: '' },
+					{ id: 2, label: '活动报名', icon: '', path: '' },
+					{ id: 3, label: '积分商城', icon: '', path: '' },
+					{ id: 4, label: '文明户管理', icon: '', path: '' },
+				],
+				tips: [],
+				newsList: [
+					{isTop: true, images: [1,2,3], time: '2019-09-20', title: 'asdasdad'},
+					{isTop: true, images: [1], time: '2019-09-20', title: 'asdasdad'},
+					{isTop: false, images: [1,2,3], time: '2019-09-20', title: 'asdasdad'},
+					{isTop: false, images: [1], time: '2019-09-20', title: 'asdasdad'},
+				],
 			}
 		},
 		onLoad() {
@@ -22,28 +112,183 @@
 		}
 	}
 </script>
+<style lang="scss">
+.body {
+	padding-bottom: 150rpx;
+}
+.top-banner {
+	width: 100%;
+	height: 350rpx;
+	background: #ccc;
+	.banner-item {
+		width: 100%;
+		height: 100%;
+	}
+}
+.button-group {
+	width: 690rpx;
+	height: 180rpx;
+	background: #FFFFFF;
+	box-shadow: 0px 0px 15rpx 0px rgba(112, 104, 226, 0.15);
+	border-radius: 20rpx;
+	margin: 0 auto;
+	margin-top: -45rpx;
+	display: flex;
+	box-sizing: border-box;
+	justify-content: space-between;
+	padding: 25rpx;
+	.button-item {
+		width: 120rpx;
+		.button-image {
+			width: 98rpx;
+			height: 98rpx;
+			display: block;
+			margin: 0 auto;
+		}
+		.button-text {
+			width: 100%;
+			text-align: center;
+			font-size: 24rpx;
+			color: #333333;
+			margin-top: 5rpx;
+		}
+	}
+}
 
-<style>
-	.content {
+.tips-block {
+	width: 690rpx;
+	height: 60rpx;
+	margin: 0 auto;
+	margin-top: 40rpx;
+	background: $basic-color;
+	position: relative;
+	overflow: hidden;
+	.tips-container {
+		width: 1000rpx;
+		height: 100%;
+	}
+	.tips-left-background {
+		width: 172rpx;
+		height: 100%;
+		background: $basic-color;
+		transform:skew(-15deg);
+		overflow: hidden;
+		display: inline-block;
+	}
+	.tips-left-text {
+		position: absolute;
+		width: 172rpx;
+		height: 100%;
+		color: #fff;
+		font-size: 32rpx;
+		text-align: center;
+		font-weight: 600;
+		line-height: 60rpx;
+		left: 0;
+		top: 0;
+	}
+	.tips-right-background {
+		width: 528rpx;
+		height: 100%;
+		transform:skew(-15deg);
+		background: #f7f5f5;
+		margin-left: 10rpx;
+		overflow: hidden;
+		display: inline-block;
+	}
+	.tips-right-swiper {
+		position: absolute;
+		right: -20rpx;
+		top: 0;
+		width: 518rpx;
+		height: 60rpx;
+		box-sizing: border-box;
+		color: $basic-color;
+		font-size: 26rpx;
+		line-height: 60rpx;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+.news-list {
+	width: 690rpx;
+	margin: 0 auto;
+	.news-item {
+		width: 690rpx;
+		padding: 30rpx 0;
+		margin: 0 auto;
+		border-top: 1rpx solid #EDEDED;
 		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
+		flex-wrap: wrap;
+		.news-title {
+			width: 100%;
+			font-size: 30rpx;
+			color: #333;
+			.news-title-top {
+				display: inline-block;
+				width: 46rpx;
+				height: 30rpx;
+				background: #D61C22;
+				border-radius: 4rpx;
+				font-size: 20rpx;
+				color: #fff;
+				padding: 0 4rpx;
+				text-align: center;
+				margin-right: 6rpx;
+			}
+		}
+		.news-time-bar {
+			width: 100%;
+			font-size: 28rpx;
+			color: #999;
+			margin-top: 20rpx;
+			display: flex;
+			align-items: center;
+			.news-time-icon {
+				width: 28rpx;
+				height: 28rpx;
+				margin-right: 10rpx;
+				display: inline-block;
+			}
+		}
+		.news-images-container {
+			width: 705rpx;
+			height: 170rpx;
+			margin-top: 20rpx;
+			display: flex;
+		}
+		.news-image-item {
+			width: 220rpx;
+			height: 170rpx;
+			margin-right: 15rpx;
+			display: block;
+		}
+		// soloImage
+		.news-left {
+			width: 440rpx;
+			margin-right: 30rpx;
+			.news-title {
+				height: 130rpx;
+				overflow: hidden;
+			}
+			.news-time-bar {
+				margin-top: 10rpx !important;
+			}
+		}
+		.news-right {
+			width: 220rpx;
+			height: 170rpx;
+			.news-image-item {
+				margin-right: 0rpx !important;
+			}
+		}
 	}
+	.soloImageNews {
+		.news-title {
 
-	.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin: 200rpx auto 50rpx auto;
+		}
 	}
-
-	.text-area {
-		display: flex;
-		justify-content: center;
-	}
-
-	.title {
-		font-size: 36rpx;
-		color: #8f8f94;
-	}
+}
 </style>
