@@ -4,10 +4,15 @@
       v-for="(item, index) in tabList"
       :key="index"
       :class="{activeItem: nowPath === item.path, centerTab: item.id === 3}"
-      @tap="switchPage(item)"
+      @click="switchPage(item)"
     >
-      <view class="tabbar-image-block" :class="{bigImage: item.id === 3}">
+      <view class="tabbar-image-block" v-if="item.id !== 3">
         <image class="tabbar-image" :src="nowPath === item.path ? item.selectIcon : item.icon"/>
+      </view>
+      <view class="tabbar-image-block bigImage" v-if="item.id === 3">
+        <view class="scene-circle">
+          <image class="tabbar-image" :src="item.icon"/>
+        </view>
       </view>
       <view class="tabbar-item-text">
         {{item.label}}
@@ -21,23 +26,28 @@
     data() {
       return {
         tabList: [
-          { id: 1, label: '主页', icon: '', selectIcon: '', path: '/index' },
-          { id: 2, label: '家庭信息', icon: '', selectIcon: '', path: '' },
-          { id: 3, label: '扫码打卡', icon: '', selectIcon: '', path: '' },
-          { id: 4, label: '购物核销', icon: '', selectIcon: '', path: '' },
-          { id: 5, label: '我的', icon: '', selectIcon: '', path: '' },
+          { id: 1, label: '主页', icon: '/static/tab/tab_index.png', selectIcon: '/static/tab/tab_index_act.png', path: '/pages/index/index' },
+          { id: 2, label: '家庭信息', icon: '/static/tab/tab_family.png', selectIcon: '/static/tab/tab_family_act.png', path: '' },
+          { id: 3, label: '扫码打卡', icon: '/static/tab/tab_scene.png', selectIcon: '', path: '' },
+          { id: 4, label: '购物核销', icon: '/static/tab/tab_check.png', selectIcon: '/static/tab/tab_check_act.png', path: '' },
+          { id: 5, label: '我的', icon: '/static/tab/tab_user.png', selectIcon: '/static/tab/tab_user_act.png', path: '/pages/user/user' },
         ],
-        nowPath: '/index'
+        nowPath: '/pages/index/index'
       }
     },
-
+    mounted() {
+      console.log(11)
+      let pageInfo = getCurrentPages()
+      this.nowPath = `/${pageInfo[0].route}`
+    },
     methods: {
       switchPage(tab) {
+        console.log(111)
         if (tab.id === 3) {
           // 扫码打卡方法
         } else {
           if (tab.path === this.nowPath) return
-
+          this.utils.jumpPage(tab.path, true)
         }
       }
     }
@@ -60,17 +70,17 @@
     width: 100rpx;
     position: relative;
     .tabbar-image-block {
-      width: 42rpx;
-      height: 42rpx;
+      width: 48px;
+      height: 48rpx;
       position: absolute;
-      bottom: 30rpx;
-      left: 29rpx;
+      bottom: 40rpx;
+      left: 0rpx;
       display: flex;
       justify-content: center;
       flex-direction: column;
       .tabbar-image {
-        width: 42rpx;
-        height: 42rpx;
+        width: 48rpx;
+        height: 48rpx;
         margin: 0 auto;
       }
     }
@@ -94,9 +104,21 @@
       border-radius: 110rpx;
       left: 2rpx;
       bottom: 40rpx;
+      .scene-circle {
+        width: 100rpx;
+        height: 100rpx;
+        background: $basic-color;
+        border-radius: 50rpx;
+        position: absolute;
+        left: 6rpx;
+        top: 5rpx;
+        @include flexBlock(center, column, center);
+      }
       .tabbar-image {
-        width: 105rpx;
-        height: 105rpx;
+        width: 53rpx;
+        height: 53rpx;
+        display: block;
+        margin: 0 auto;
       }
     }
   }

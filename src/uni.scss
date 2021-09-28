@@ -76,6 +76,11 @@ $uni-font-size-subtitle:36rpx;
 $uni-color-paragraph: #3F536E; // 文章段落颜色
 $uni-font-size-paragraph:30rpx;
 
+@mixin body {
+  background: #f7f7f7;
+  min-height: 100vh;
+}
+
 @mixin textOverflow {
   overflow: hidden;
   text-overflow: ellipsis;

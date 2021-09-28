@@ -30,6 +30,31 @@
 			"style": {
 				"navigationBarTitleText": "积分商城"
 			}
+		},
+		{
+			"path": "pages/index/goodsList", //商品列表
+			"style": {
+				"navigationBarTitleText": "商品列表"
+			}
+		},
+		{
+			"path": "pages/goods/goodsDetail", //商品详情
+			"style": {
+				"navigationBarTitleText": "商品详情"
+			}
+		},
+		{
+			"path": "pages/user/user", //用户中心
+			"style": {
+				"navigationBarTitleText": "用户中心",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/user/intQuery", //积分明细
+			"style": {
+				"navigationBarTitleText": "积分明细"
+			}
 		}
 	],
 	"globalStyle": {
