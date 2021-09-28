@@ -46,7 +46,7 @@ import SearchInput from '../../Components/SearchInput'
 export default {
   // TODO: 营业时间与未营业时的样式
   components: {
-    SearchInput
+    SearchInput,
   },
   data() {
     return {
