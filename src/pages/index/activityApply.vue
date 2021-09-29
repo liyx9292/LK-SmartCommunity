@@ -76,8 +76,8 @@
 import ActivityCard from '../../Components/ActivityCard'
 const TAG_HISTORIES = 'tag_histories'
 export default {
-  // TODO: 搜索栏下面的tag从哪里获取 历史记录
-  // TODO: 该做已报名， 同时完善公共组件
+  // TODO finish: 搜索栏下面的tag从哪里获取 历史记录
+  // TODO finish: 该做已报名， 同时完善公共组件
   components: {
     ActivityCard,
   },
