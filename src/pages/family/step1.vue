@@ -6,61 +6,98 @@
         所住小区
       </view>
       <view class="form-item-container">
-        <picker class="form-item-select" @change="bindPickerChange" :value="index" :range="communityList">
-          <view class="uni-input">{{array[index]}}</view>
+        <picker
+          class="form-item-select"
+          mode="selector"
+          @change="bindPickerChange"
+          :range="communityList"
+          :value="communityIndex"
+        >
+          <text>{{communityList[communityIndex]}}</text>
         </picker>
         <image class="select-arrow" src="/static/icons/family_downArrow.png" />
       </view>
     </view>
 
-    <view class="form-item">
+    <view class="form-item" v-for="item in inputList" :key="item.keyName">
       <view class="form-item-label">
-        所住楼栋
+        {{ item.text }}
       </view>
-      <view class="form-item-container">
-        <input class="form-item-input" placeholder="请输入楼栋号"/>
+      <view class="form-item-container" :class="{focusInput: focusInputKey === item.keyName}">
+        <input class="form-item-input" :placeholder="item.placeholder" v-model="inputData[item.keyName]" @focus="focusInput(item.keyName)" @blur="focusInput('')"/>
         <view class="input-end">
-          号楼
+          {{ item.endText }}
         </view>
       </view>
     </view>
 
-    <view class="form-item">
-      <view class="form-item-label">
-        所住单元
-      </view>
-      <view class="form-item-container">
-        <input class="form-item-input" placeholder="请输入单元号"/>
-        <view class="input-end">
-          单元
-        </view>
-      </view>
-    </view>
-
-    <view class="form-item">
-      <view class="form-item-label">
-        房间号
-      </view>
-      <view class="form-item-container">
-        <input class="form-item-input" placeholder="请输入房间号"/>
-        <view class="input-end">
-          室
-        </view>
-      </view>
-    </view>
+    <button class="nextButton" @click="next">下一步</button>
   </view>
 </template>
 <script>
+const form_keyValue = [
+  { label: 'build', keyName: 'build', palceholder: '请输入楼栋号', text: '所住楼栋', endText: '号楼' },
+  { label: 'unit', keyName: 'unit', palceholder: '请输入单元号', text: '所住单元', endText: '单元' },
+  { label: 'room', keyName: 'room', palceholder: '请输入房间号', text: '房间号', endText: '室' },
+]
 export default {
   props: {
     communityList: {
       type: Array,
       default: [],
     },
-
+    step1Data: {
+      type: Object,
+      default: {}
+    }
   },
+  emits: ['nextStep'],
   data() {
     return {
+      inputList: form_keyValue,
+      communityIndex: 0,
+      inputData: {},
+      focusInputKey: '',
+    }
+  },
+  methods: {
+    bindPickerChange(e) {
+      console.log(e)
+    },
+    input(e, keyName) {
+      this.inputData[keyName] = e.detail.value
+    },
+    focusInput(keyName = '') {
+      this.focusInputKey = keyName
+    },
+    next() {
+      try {
+        let inputData = this.inputData
+        this.validator(inputData)
+        this.$emit('nextStep', inputData, 'step1Data')
+      } catch (e) {
+        uni.showModal({
+          title: '数据不完整',
+          content: `请将${e.text}填写完整`,
+          showCancel: false,
+        })
+      }
+    },
+    validator(inputData) {
+      for(let i = 0 ; i < form_keyValue.length; i++) {
+        let keyName = form_keyValue[i].keyName;
+        if (!inputData[keyName]) {
+          throw form_keyValue[i]
+        }
+      }
+    }
+  },
+  watch: {
+    communityList: (newValue, oldValue) => {
+      console.log('---test---')
+      console.log(newValue)
+    },
+    step1Data: (newValue, oldValue) => {
 
     }
   }
@@ -70,7 +107,7 @@ export default {
 .step1-container {
   width: 100%;
   background: #fff;
-  padding: 25rpx 30rpx;
+  padding: 25rpx 30rpx 50rpx 30rpx;
   box-sizing: border-box;
   margin-top: 10rpx;
   .form-item {
@@ -109,6 +146,16 @@ export default {
         
       }
     }
+    .focusInput {
+      box-shadow: 0rpx 0rpx 4rpx $basic-color;
+      border-color: $basic-color;
+    }
   }
+}
+
+.nextButton {
+  background: $basic-color;
+  font-size: 32rpx;
+  color: #fff;
 }
 </style>

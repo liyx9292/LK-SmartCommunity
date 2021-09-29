@@ -44,7 +44,25 @@
 			}
 		},
 		{
-			"path": "pages/family/familyDetail", //商品详情
+			"path": "pages/index/civilizedBuild/build", //文明户小区
+			"style": {
+				"navigationBarTitleText": "文明户小区"
+			}
+		},
+		{
+			"path": "pages/index/civilizedBuild/unit", //文明户楼栋
+			"style": {
+				"navigationBarTitleText": "文明户楼栋"
+			}
+		},
+		{
+			"path": "pages/index/civilizedBuild/room", //文明户房间
+			"style": {
+				"navigationBarTitleText": "文明户室"
+			}
+		},
+		{
+			"path": "pages/family/familyDetail", //填入家庭信息
 			"style": {
 				"navigationBarTitleText": "家庭信息"
 			}
