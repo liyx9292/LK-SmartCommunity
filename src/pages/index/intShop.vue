@@ -44,7 +44,7 @@
 <script>
 import SearchInput from '../../Components/SearchInput'
 export default {
-  // TODO: 营业时间与未营业时的样式
+  // TODO finish: 营业时间与未营业时的样式 灰色显示
   components: {
     SearchInput,
   },

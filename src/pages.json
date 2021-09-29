@@ -44,6 +44,12 @@
 			}
 		},
 		{
+			"path": "pages/family/familyDetail", //商品详情
+			"style": {
+				"navigationBarTitleText": "家庭信息"
+			}
+		},
+		{
 			"path": "pages/user/user", //用户中心
 			"style": {
 				"navigationBarTitleText": "用户中心",

@@ -2,6 +2,14 @@
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
+			uni.getSystemInfo({
+				success:res => {
+					// 计算顶部栏高度
+					// 屏幕实际尺寸(screenWidth)/750rpx=目标元素尺寸/结果(实际px)
+					let statusHeightRpx = (750 * res.statusBarHeight / res.screenWidth).toFixed(2)
+					this.utils.setStorage('statusBarHeight', statusHeightRpx)
+				}
+			})
 		},
 		onShow: function() {
 			console.log('App Show')

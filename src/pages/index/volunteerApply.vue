@@ -40,7 +40,7 @@
 </template>
 <script>
 export default {
-// TODO: 手机号的修改, 默认锁死，点击修改才能修改
+// TODO finish: 手机号的修改, 默认锁死，点击修改才能修改
   data() {
     return {
       submitLoading: false,

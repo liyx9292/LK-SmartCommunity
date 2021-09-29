@@ -3,6 +3,10 @@
     <view class="top">
       <image class="top-background" src="/static/user/page_top.png" />
       <view class="top-container">
+        <!-- 顶部栏 -->
+        <view class="navigate-bar" :style="{paddingTop: `${statusHeight}rpx`}">
+          个人资料
+        </view>
         <!-- 用户信息 -->
         <view class="user-block">
           <view class="user-avatar-container">
@@ -67,7 +71,6 @@
 </template>
 <script>
 // TODO: 未登录的头像
-// TODO: 自定义头部
 import Tabbar from '../../Components/Tabbar.Component'
 export default {
   components: {
@@ -75,12 +78,17 @@ export default {
   },
   data() {
     return {
+      statusHeight: 0,
       intKeys: [
         { label: '拥有积分', keyName: 'hasInt' },
         { label: '志愿者积分', keyName: 'volunteerInt' },
         { label: '文明户积分', keyName: 'civilizedInt' },
       ],
     }
+  },
+  onLoad() {
+    let statusHeight = this.utils.getStorage('statusBarHeight')
+    this.statusHeight = statusHeight
   },
   methods: {
     jumpIntQuery() {
@@ -100,6 +108,7 @@ export default {
   .top-background {
     width: 100%;
     height: 100%;
+    position: relative;
   }
   .top-container {
     position: absolute;
@@ -109,11 +118,19 @@ export default {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
+    .navigate-bar {
+      height: 80rpx;
+      width: 100%;
+      line-height: 80rpx;
+      text-align: center;
+      font-size: 36rpx;
+      color: #fff;
+    }
     // 用户信息
     .user-block {
       width: 100%;
       box-sizing: border-box;
-      padding: 30rpx;
+      padding: 0 30rpx;
       @include flexBlock(flex-start, row, center);
       .user-avatar-container {
         width: 120rpx;
@@ -163,7 +180,7 @@ export default {
       width: 100%;
       box-sizing: border-box;
       padding: 0 60rpx;
-      margin-top: 40rpx;
+      margin-top: 10rpx;
       @include flexBlock(space-between);
       .int-item {
         width: 200rpx;
