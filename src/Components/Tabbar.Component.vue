@@ -29,7 +29,7 @@
           { id: 1, label: '主页', icon: '/static/tab/tab_index.png', selectIcon: '/static/tab/tab_index_act.png', path: '/pages/index/index' },
           { id: 2, label: '家庭信息', icon: '/static/tab/tab_family.png', selectIcon: '/static/tab/tab_family_act.png', path: '/pages/family/familyDetail' },
           { id: 3, label: '扫码打卡', icon: '/static/tab/tab_scene.png', selectIcon: '', path: '' },
-          { id: 4, label: '购物核销', icon: '/static/tab/tab_check.png', selectIcon: '/static/tab/tab_check_act.png', path: '/pages/family/checkList' },
+          { id: 4, label: '购物核销', icon: '/static/tab/tab_check.png', selectIcon: '/static/tab/tab_check_act.png', path: '/pages/check/index' },
           { id: 5, label: '我的', icon: '/static/tab/tab_user.png', selectIcon: '/static/tab/tab_user_act.png', path: '/pages/user/user' },
         ],
         nowPath: '/pages/index/index'

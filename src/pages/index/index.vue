@@ -11,7 +11,7 @@
 
 		<!-- 4个按钮 -->
 		<view class="button-group">
-			<view class="button-item" v-for="(item, index) in buttonGroup" :key="item.id">
+			<view class="button-item" v-for="(item, index) in buttonGroup" :key="item.id" @click="jumpPage(item.path)">
 				<image class="button-image" :src="`../../static/index/index_buttons_${index + 1}.png`" />
 				<view class="button-text">
 					{{item.label}}
@@ -90,10 +90,10 @@
 			return {
 				banners: [],
 				buttonGroup: [
-					{ id: 1, label: '志愿者申请', icon: '', path: '' },
-					{ id: 2, label: '活动报名', icon: '', path: '' },
-					{ id: 3, label: '积分商城', icon: '', path: '' },
-					{ id: 4, label: '文明户管理', icon: '', path: '' },
+					{ id: 1, label: '志愿者申请', path: '/pages/index/volunteerApply' },
+					{ id: 2, label: '活动报名', path: '/pages/index/activityApply' },
+					{ id: 3, label: '积分商城', path: '/pages/index/intShop' },
+					{ id: 4, label: '文明户管理', path: '/pages/index/civilizedBuild/build' },
 				],
 				tips: [],
 				newsList: [
@@ -108,7 +108,9 @@
 
 		},
 		methods: {
-
+			jumpPage(path) {
+				this.utils.jumpPage(path)
+			}
 		}
 	}
 </script>

@@ -44,6 +44,12 @@
 			}
 		},
 		{
+			"path": "pages/check/index", //积分商城
+			"style": {
+				"navigationBarTitleText": "商品核销"
+			}
+		},
+		{
 			"path": "pages/index/civilizedBuild/build", //文明户小区
 			"style": {
 				"navigationBarTitleText": "文明户小区"
