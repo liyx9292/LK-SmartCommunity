@@ -1,5 +1,5 @@
 <template>
-  <view class="goods-item">
+  <view class="goods-item" @click="jumpPage">
     <image src="" class="goods-image"/>
     <view class="goods-info">
       <view class="goods-name">
@@ -30,6 +30,11 @@ export default {
         integral: 20,
         disabled: true,
       }
+    }
+  },
+  methods: {
+    jumpPage() {
+      this.utils.jumpPage(`/pages/goods/goodsDetail`)
     }
   }
 }

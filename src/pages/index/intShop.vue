@@ -66,7 +66,7 @@ export default {
       this.nowTab = item.value
     },
     jumpShop(shop) {
-      this.utils.jumpPage(``)
+      this.utils.jumpPage(`/pages/index/goodsList`)
     }
   }
 }
