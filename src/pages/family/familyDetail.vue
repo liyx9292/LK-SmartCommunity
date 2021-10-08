@@ -3,8 +3,22 @@
     <FamilyProgress :nowStep="nowStep" />
 
     <template v-if="nowStep === 1">
-      <Step1 
+      <Step1
         :communityList="communityList"
+        @nextStep="nextStep"
+      />
+    </template>
+
+    <template v-if="nowStep === 2">
+      <Step2
+        @prevStep="prevStep"
+        @nextStep="nextStep"
+      />
+    </template>
+
+    <template v-if="nowStep === 3">
+      <Step3
+        @prevStep="prevStep"
         @nextStep="nextStep"
       />
     </template>
@@ -18,6 +32,8 @@
 import FamilyProgress from '../../Components/FamilyProgress'
 import Tabbar from '../../Components/Tabbar.Component'
 import Step1 from './step1'
+import Step2 from './step2'
+import Step3 from './step3'
 
 const stepKeyValue = {
   step1Data: 1,
@@ -28,13 +44,16 @@ export default {
   components: {
     FamilyProgress,
     Tabbar,
-    Step1
+    Step1,
+    Step2,
+    Step3,
   },
   data() {
     return {
       nowStep: 1,
       communityList: [1,2,2,2,1,1],
       step1Data: {},
+      step2Data: {},
     }
   },
   methods: {
@@ -49,6 +68,9 @@ export default {
       } else {
         this.nowStep = nowStepNum + 1
       }
+    },
+    prevStep() {
+      this.nowStep = this.nowStep - 1
     }
   }
 }
