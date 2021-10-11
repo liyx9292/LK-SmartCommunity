@@ -36,13 +36,11 @@
       }
     },
     mounted() {
-      console.log(11)
       let pageInfo = getCurrentPages()
       this.nowPath = `/${pageInfo[0].route}`
     },
     methods: {
       switchPage(tab) {
-        console.log(111)
         if (tab.id === 3) {
           // 扫码打卡方法
         } else {

@@ -85,6 +85,13 @@
 			"style": {
 				"navigationBarTitleText": "积分明细"
 			}
+		},
+		{
+			"path": "pages/common/auth", //授权页面
+			"style": {
+				"navigationBarTitleText": "授权页面",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {

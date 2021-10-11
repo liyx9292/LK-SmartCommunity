@@ -10,6 +10,7 @@
 					this.utils.setStorage('statusBarHeight', statusHeightRpx)
 				}
 			})
+			this.utils.login()
 		},
 		onShow: function() {
 			console.log('App Show')
