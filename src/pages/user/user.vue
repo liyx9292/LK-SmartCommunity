@@ -10,11 +10,11 @@
         <!-- 用户信息 -->
         <view class="user-block">
           <view class="user-avatar-container">
-            <image class="user-avatar" />
+            <image class="user-avatar" :src="userInfo.avatarUrl"/>
           </view>
           <view class="user-info">
             <view class="user-name">
-              用户名字
+              {{ userInfo.nickName }}
             </view>
             <view class="user-tags">
               <view class="tag-item">
@@ -72,6 +72,7 @@
 <script>
 // TODO: 未登录的头像
 import Tabbar from '../../Components/Tabbar.Component'
+import { default as Constants } from '@/Utils/constants'
 export default {
   components: {
     Tabbar,
@@ -84,11 +85,14 @@ export default {
         { label: '志愿者积分', keyName: 'volunteerInt' },
         { label: '文明户积分', keyName: 'civilizedInt' },
       ],
+      userInfo: null
     }
   },
   onLoad() {
     let statusHeight = this.utils.getStorage('statusBarHeight')
     this.statusHeight = statusHeight
+    let userInfo = this.utils.getStorage(Constants.USER_INFO)
+    this.userInfo = userInfo
   },
   methods: {
     jumpIntQuery() {
