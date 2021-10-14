@@ -42,10 +42,16 @@
 </template>
 <script>
 export default {
+  emits: ['prevStep', 'nextStep'],
   data() {
     return {
 
     }
+  },
+  methods: {
+    prevStep() {
+      this.$emit('prevStep')
+    },
   }
 }
 </script>

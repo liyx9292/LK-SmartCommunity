@@ -2,7 +2,8 @@
 
 UNIAPP-ID: __UNI__E048D05
 
-APPID: wx2073627ee3a2d7e4
+APPID：wx22a2e5bfc4fd5674
+APPSercret：b2ecd050a91733ff44b4a4ef3f30fb3c
 ## Project setup
 ```
 npm install
