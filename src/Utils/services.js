@@ -1,8 +1,10 @@
+import config from '../config'
+
 function request(url, params, method = 'get') {
   method = method.toUpperCase();
   return new Promise((resolve, reject) => {
     uni.request({
-      url: url, //仅为示例，并非真实接口地址。
+      url: `${config.baseUrl}${url}`, //仅为示例，并非真实接口地址。
       method: method,
       data: params,
       success: res => {

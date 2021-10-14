@@ -1,5 +1,5 @@
 <template>
-  <view class="body">
+  <scroll-view class="body" scoll-y :scroll-top="scrollTopNum" id="scrollBody">
     <FamilyProgress :nowStep="nowStep" />
 
     <template v-if="nowStep === 1">
@@ -13,6 +13,7 @@
       <Step2
         @prevStep="prevStep"
         @nextStep="nextStep"
+        @scrollTop="scrollTop"
       />
     </template>
 
@@ -26,7 +27,7 @@
 
 
     <Tabbar />
-  </view>
+  </scroll-view>
 </template>
 <script>
 import FamilyProgress from '../../Components/FamilyProgress'
@@ -50,7 +51,8 @@ export default {
   },
   data() {
     return {
-      nowStep: 1,
+      scrollTopNum: -1,
+      nowStep: 2,
       communityList: [1,2,2,2,1,1],
       step1Data: {},
       step2Data: {},
@@ -71,6 +73,15 @@ export default {
     },
     prevStep() {
       this.nowStep = this.nowStep - 1
+    },
+    scrollTop(buttonHeight) {
+      const query = uni.createSelectorQuery().in(this);
+      query.select('#scrollBody').boundingClientRect(data => {
+        console.log(data)
+        // debugger
+        // this.$emit('scrollTop', offsetTop + data.top)
+        this.scrollTopNum = -buttonHeight
+      }).exec();
     }
   }
 }
@@ -79,5 +90,6 @@ export default {
 .body {
   @include body();
   padding-bottom: 120rpx;
+  overflow: hidden;
 }
 </style>
