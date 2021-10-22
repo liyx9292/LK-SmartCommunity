@@ -24,7 +24,9 @@
         {{ item.text }}
       </view>
       <view class="form-item-container" :class="{focusInput: focusInputKey === item.keyName}">
-        <input class="form-item-input" :placeholder="item.placeholder" v-model="inputData[item.keyName]" @focus="focusInput(item.keyName)" @blur="focusInput('')"/>
+        <picker class="form-item-input" mode="selector" :range="buildTree[`${item.label}NumArr`]" @change="e => pickerChange(e, item.label)">
+          {{ inputData[`${item.label}Value`] || '请选择' }}
+        </picker>
         <view class="input-end">
           {{ item.endText }}
         </view>
@@ -56,24 +58,43 @@ export default {
     return {
       inputList: form_keyValue,
       communityIndex: 0,
-      inputData: {},
+      inputData: {
+        buildValue: null,
+        unitValue: null,
+        roomValue: null,
+      },
       focusInputKey: '',
+      buildNum: 2,
+      unitNum: 3,
+      roomNum: 4,
+    }
+  },
+  computed: {
+    buildTree() {
+      let obj = {}
+      obj.buildNumArr = this.getNumberArr(this.buildNum)
+      obj.unitNumArr = this.getNumberArr(this.unitNum)
+      obj.roomNumArr = this.getNumberArr(this.roomNum)
+      return obj
     }
   },
   methods: {
-    bindPickerChange(e) {
-      console.log(e)
-    },
     input(e, keyName) {
       this.inputData[keyName] = e.detail.value
     },
     focusInput(keyName = '') {
       this.focusInputKey = keyName
     },
+    pickerChange(e, label) {
+      let arr = this.buildTree[`${label}NumArr`]
+      let index = parseInt(e.detail.value)
+      let value = arr[index]
+      this.inputData[`${label}Value`] = value
+    },
     next() {
       try {
         let inputData = this.inputData
-        this.validator(inputData)
+        let params = this.validator(inputData)
         this.$emit('nextStep', inputData, 'step1Data')
       } catch (e) {
         uni.showModal({
@@ -84,12 +105,23 @@ export default {
       }
     },
     validator(inputData) {
+      let obj = {}
       for(let i = 0 ; i < form_keyValue.length; i++) {
-        let keyName = form_keyValue[i].keyName;
-        if (!inputData[keyName]) {
+        let label = `${form_keyValue[i].label}Value`;
+        let data = inputData[label]
+        if (!data) {
           throw form_keyValue[i]
         }
+        obj[form_keyValue[i].keyName] = data
       }
+      return obj
+    },
+    getNumberArr(num) {
+      let arr = []
+      for(let i = 1; i <= num; i++) {
+        arr.push(i)
+      }
+      return arr
     }
   },
   watch: {
@@ -143,7 +175,7 @@ export default {
         z-index: 2;
       }
       .form-item-input {
-        
+        width: 500rpx
       }
     }
     .focusInput {

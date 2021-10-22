@@ -28,8 +28,7 @@ import { default as Constants } from '@/Utils/constants'
 export default {
   data() {
     return {
-      isShowModal: true,
-
+      isShowModal: false,
     }
   },
   methods: {

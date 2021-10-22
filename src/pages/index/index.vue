@@ -50,7 +50,7 @@
 						</view>
 						<view class="news-time-bar">
 							<image class="news-time-icon" src="../../static/icons/icon_time.png" />
-							<text>{{item.time}}</text>
+							<text>{{item.create_time}}</text>
 						</view>
 						<view class="news-images-container">
 							<image class="news-image-item" v-for="(imageItem, index) in item.images" :key="index" :src="imageItem"/>
@@ -66,7 +66,7 @@
 							</view>
 							<view class="news-time-bar">
 								<image class="news-time-icon" src="../../static/icons/icon_time.png" />
-								<text>{{item.time}}</text>
+								<text>{{item.create_time}}</text>
 							</view>
 						</view>
 						<view class="news-right">
@@ -82,6 +82,7 @@
 
 <script>
   import Tabbar from '@/Components/Tabbar.Component.vue'
+	import config from '@/config'
 	export default {
 		components: {
 			Tabbar,
@@ -105,11 +106,20 @@
 			}
 		},
 		onLoad() {
-
+			this.getNews()
 		},
 		methods: {
 			jumpPage(path) {
 				this.utils.jumpPage(path)
+			},
+			getNews() {
+				this.services.request('/getNewsList.html')
+				.then(res => {
+					res.forEach(item => {
+						item.images = [`${config.baseUrl}${item.thumb}`]
+					})
+					this.newsList = res
+				})
 			}
 		}
 	}
