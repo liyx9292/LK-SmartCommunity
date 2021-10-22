@@ -43,6 +43,16 @@ function request(url, params, method = 'get') {
   })
 }
 
+function get(url, data) {
+  return request(url, data)
+}
+
+function post(url, data) {
+  return request(url, data, 'post')
+}
+
 export default {
   request,
+  get,
+  post,
 }

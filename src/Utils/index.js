@@ -21,10 +21,10 @@ function jumpPage(url, isRedirect) {
   // TODO: 加入判定，如果不是登录就提示登录
   let userInfo = getStorage(Constants.USER_INFO)
   let token = getStorage(Constants.TOKEN)
-  if (!userInfo || !userInfo.nickName || !token) {
-    uni.navigateTo({ url: '/pages/common/auth'})
-    return
-  }
+  // if (!userInfo || !userInfo.nickName || !token) {
+  //   uni.navigateTo({ url: '/pages/common/auth'})
+  //   return
+  // }
   jumpFn({
     url: url,
   })
