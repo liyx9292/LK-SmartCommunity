@@ -46,7 +46,12 @@
 
 			},
 			"sdkConfigs": { /* SDK配置 */
-
+				"oauth": {
+					"mp-weixin": {
+						"appsecret": "b2ecd050a91733ff44b4a4ef3f30fb3c",
+						"appid": "wx22a2e5bfc4fd5674"
+					}
+				}
 			}
 		}
 	},
@@ -77,5 +82,8 @@
     },
     "mp-qq" : {
         "usingComponents" : true
-    }
+    },
+	"networkTimeout": {
+		"request": 10000
+	}
 }

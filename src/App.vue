@@ -1,4 +1,5 @@
 <script>
+	import constants from '@/Utils/constants'
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
@@ -10,6 +11,7 @@
 					this.utils.setStorage('statusBarHeight', statusHeightRpx)
 				}
 			})
+			this.utils.cleanStorage(constants.LOGIN_CODE)
 			this.utils.login()
 		},
 		onShow: function() {

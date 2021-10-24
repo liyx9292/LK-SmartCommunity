@@ -5,33 +5,33 @@
       <view class="top-tab-item"
         v-for="item in tabList"
         :key="item"
-        :class="{activeTab: nowTab === item.value}"
+        :class="{activeTab: nowTab === item.category_id}"
         @click="switchTab(item)"
       >
-        {{ item.label }}
+        {{ item.name }}
       </view>
     </view>
 
-    <SearchInput />
+    <SearchInput @submitSearch="submitSearch" />
 
     <view class="list">
       <list>
         <cell v-for="(item, index) in list" :key="index">
-          <view class="shop-item" @click="jumpShop(item)">
-            <image class="shop-image" src="" />
+          <view class="shop-item" @click="jumpShop(item.shop_id)">
+            <image class="shop-image" :src="item.image" mode="widthFix"/>
             <view class="shop-info">
               <view class="shop-name">
-                永辉超市
+                {{ item.shop_name}}
               </view>
               <view class="shop-time desc-bar">
                 <view class="shop-open" :class="{shopIsOpen: item.isOpen}">
                   {{item.isOpen ? '营业' : '关门'}}
                 </view>
-                09:00-22:00
+                {{ item.shop_hours }}
               </view>
               <view class="desc-bar shop-location">
                 <image class="location-icon" src="/static/icons/icon_location.png" />
-                这是地址
+                {{ item.address }}
               </view>
             </view>
           </view>
@@ -43,6 +43,7 @@
 </template>
 <script>
 import SearchInput from '../../Components/SearchInput'
+import config from '@/config'
 export default {
   // TODO finish: 营业时间与未营业时的样式 灰色显示
   components: {
@@ -51,23 +52,78 @@ export default {
   data() {
     return {
       pageLoading: false,
-      tabList: [
-        { value:'SHYP', label: '生活用品' },
-        { value:'SHFW', label: '生活服务' },
-        { value:'YLJK', label: '医疗健康' },
-      ],
-      nowTab: 'SHYP',
-      list: [1,1,1,1,1,1],
+      tabList: [],
+      tabListReal: [],
+      nowTab: '',
+      list: [],
+      searchText: '',
+      nowDate: '',
     }
   },
+  onLoad() {
+    this.getNowDate()
+    this.getCateList(this.getList)
+  },
   methods: {
-    switchTab(item) {
-      if (this.nowTab === item.value || this.pageLoading) return
-      this.nowTab = item.value
+    getNowDate() {
+      let nowDate = new Date()
+      let nowYear = nowDate.getFullYear()
+      let nowMonth = nowDate.getMonth() + 1
+      let nowDay = nowDate.getDate()
+      let nowDateStr = `${nowYear}-${nowMonth}-${nowDay}`
+      this.nowDate = nowDateStr
     },
-    jumpShop(shop) {
-      this.utils.jumpPage(`/pages/index/goodsList`)
+    switchTab(item) {
+      if (this.nowTab === item.category_id || this.pageLoading) return
+      this.nowTab = item.category_id
+      this.searchText = ''
+      this.getList(item.category_id)
+    },
+    jumpShop(shopId) {
+      this.utils.jumpPage(`/pages/index/goodsList?shopId=${shopId}`)
+    },
+    submitSearch(e) {
+      this.searchText = e
+      this.getList(this.nowTab)
+    },
+    getCateList(fn) {
+      this.services.get('/getShopCate.html')
+      .then(res => {
+        this.tabList = res
+        fn && fn(res[0].category_id)
+      })
+    },
+    getList(id) {
+      this.nowTab = id
+      let params = {
+        cate_id: id,
+        keys: this.searchText,
+      }
+      this.services.get('/getShopList.html', params)
+      .then(res => {
+        res.forEach(item => {
+          item.image = `${config.baseUrl}${item.logo_image}`
+          item.isOpen = this.handleShopTime(item.shop_hours)
+        })
+        this.list = res
+      })
+    },
+    handleShopTime(shopHours = '') {
+      let hoursArr = shopHours.split('-')
+      if (hoursArr.length === 0) return false
+      let isOpen = false
+      let nowDate = this.nowDate
+      let startTime = new Date(`${nowDate} ${hoursArr[0]}`).getTime()
+      let endTime = new Date(`${nowDate} ${hoursArr[1]}`).getTime()
+      let nowTime = new Date().getTime()
+      if (startTime < nowTime && endTime > nowTime) {
+        isOpen = true
+      }
+      return isOpen
     }
+  },
+  watch: {
+
   }
 }
 </script>

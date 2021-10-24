@@ -21,8 +21,8 @@
           <input class="search-input" @focus="focusSearch" @blur="blurSearch" @confirm="submitSearch" @input="e => inputSearch(e, 'firstSearchText')"/>
         </view>
         <view class="tag-container">
-          <view class="tag-item" v-for="item in tags" :key="item">
-            {{ item }}
+          <view class="tag-item" v-for="item in tags" :key="item" @click="clickTag(item)">
+            {{ item.cate_name }}
           </view>
         </view>
       </view>
@@ -42,7 +42,7 @@
             <image src="/static/icons/icon_search.png"/>
             <text>请输入内容</text>
           </view>
-          <input class="search-input" @focus="focusSearch" @blur="blurSearch" @confirm="submitSearch" @input="e => inputSearch(e, 'secondSearchText')"/>
+          <input class="search-input" @focus="focusSearch" @blur="blurSearch" @confirm="submitSearch" @input="e => inputSearch(e, 'secondSearchText')" v-model="firstSearchText"/>
         </view>
       </view>
       <!-- 进行中列表 -->
@@ -73,11 +73,10 @@
   </view>
 </template>
 <script>
+// TODO: 活动泪目列表不知道是哪里的列表
 import ActivityCard from '../../Components/ActivityCard'
 const TAG_HISTORIES = 'tag_histories'
 export default {
-  // TODO finish: 搜索栏下面的tag从哪里获取 历史记录
-  // TODO finish: 该做已报名， 同时完善公共组件
   components: {
     ActivityCard,
   },
@@ -87,16 +86,53 @@ export default {
       tabList: ['applying', 'applyed'],
       nowTab: 'applying',
       tags: [],
+      nowCateId: '',
       firstSearchText: '',
-      secondSearchText: '',
       applyingList: [1,2,3,4],
+      applyingPage: 1,
+      joinedList: [],
+      joinedPage: 1,
       isFocusSearch: false, // 是否先是搜索栏字体
     }
   },
   onLoad() {
-    this.getTags()
+    // this.getTags()
+    this.getActivityCate(this.getActivity)
   },
   methods: {
+    getActivityCate(fn) {
+      this.services.get('/getActivesCate.html')
+      .then(res => {
+        this.tags = res
+        fn && fn()
+      })
+    },
+    getActivity(page = 1, keys = '') {
+      let params = {
+        page: page,
+        keys: keys,
+        cate_id: this.nowCateId,
+        pageSize: 20,
+      }
+      this.services.get('/getActives.html', params)
+      .then(res => {
+        this.applyingPage = page
+        
+      })
+    },
+    getJoinedActivity(page = 1, keys = '') {
+      let params = {
+        page: page,
+        keys: keys,
+        pageSize: 20,
+        cate_id: '',
+      }
+      this.services.get('/getJoinActives.html', params)
+      .then(res => {
+        this.joinedPage = page
+
+      })
+    },
     switchTab(value) {
       if (value === this.nowTab || this.pageLoading) return
       this.nowTab = value
@@ -116,6 +152,8 @@ export default {
 
       this.saveTags(value)
       this.getTags()
+      let fn = this.nowTab === 'applying' ? this.getActivity : this.getJoinedActivity
+      fn(1, value)
     },
     getTags() {
       let tags = this.utils.getStorage(TAG_HISTORIES) || []
@@ -131,7 +169,25 @@ export default {
       }
       tags.unshift(data)
       this.utils.setStorage(TAG_HISTORIES, tags)
+    },
+    clickTag(item) {
+      // this.submitSearch({detail: {value: itemText}})
+      this.nowCateId = item.cate_id
+      this.getActivity()
     }
+  },
+  watch: {
+    nowTab(newValue) {
+      this.nowCateId = ''
+      this.firstSearchText = ''
+      let fn = newValue === 'applying' ? this.getActivity : this.getJoinedActivity
+      fn()
+    }
+  },
+  onReachBottom() {
+    let nowPage = this.nowTab === 'applying' ? this.applyingPage : this.joinedPage
+    let fn = this.nowTab === 'applying' ? this.getActivity : this.getJoinedActivity
+    fn(nowPage + 1, this.firstSearchText)
   }
 }
 </script>

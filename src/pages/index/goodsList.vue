@@ -1,6 +1,6 @@
 <template>
   <view class="body">
-    <SearchInput />
+    <SearchInput @submitSearch="submitSearch" />
     
     <!-- 列表 -->
     <view class="list">
@@ -23,7 +23,28 @@ export default {
   data() {
     return {
       pageLoading: false,
-      list: [1,1,1,1,1,1],
+      list: [],
+      searchText: '',
+      shopId: null,
+    }
+  },
+  onLoad(e) {
+    this.shopId = e.shopId
+    this.getGoodsList()
+  },
+  methods: {
+    submitSearch(e) {
+      this.searchText = e
+    },
+    getGoodsList() {
+      let params = {
+        shop_id: this.shopId,
+        keys: this.searchText,
+      }
+      this.services.get('/getGoodsList.html', params)
+      .then(res => {
+        this.list = res
+      })
     }
   }
 }

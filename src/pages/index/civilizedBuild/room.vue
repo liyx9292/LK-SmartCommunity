@@ -54,11 +54,11 @@
           请输入减分理由
         </view>
         <view class="input-container text-area">
-          <textarea placeholder="请输入减分理由"/>
+          <textarea placeholder="请输入减分理由" v-model="reason"/>
         </view>
         <view class="reason-block">
-          <view class="reason-item">
-            乱扔垃圾
+          <view class="reason-item" v-for="(item, index) in reasonList" :key="index">
+            {{ item }}
           </view>
         </view>
         <!-- 上传图片 -->
@@ -70,7 +70,7 @@
             <image class="upload-image-img" src="/static/index/upload_image.png" @click="chooseImage"/>
           </view>
         </view>
-        <button class="modal-button">上报</button>
+        <button class="modal-button" @click="sendReason">上报</button>
       </view>
     </view>
   </view>
@@ -78,6 +78,7 @@
 <script>
 // TODO: 加分弹窗 只有分数 没有理由
 // TODO: 减分弹窗 理由标签从哪里获取, 图片最多几张
+import { Constants } from '@/Utils/constants'
 const infoLabelKey = [
   { label: '小区', keyName: 'community' },
   { label: '楼栋', keyName: 'build' },
@@ -101,6 +102,8 @@ export default {
         reason: '',
       },
       imageUpload: [],
+      reasonList: [],
+      reason: '',
     }
   },
   methods: {
@@ -123,6 +126,9 @@ export default {
           this.imageUpload.push(src)
         }
       })
+    },
+    sendReason() {
+      let reason = this.reason
     }
   }
 }

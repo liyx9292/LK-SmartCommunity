@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       scrollTopNum: -1,
-      nowStep: 2,
+      nowStep: 1,
       communityList: [1,2,2,2,1,1],
       step1Data: {},
       step2Data: {},

@@ -13,25 +13,25 @@
             <view class="form-label">
               姓名
             </view>
-            <input class="form-input" name="name" placeholder="请输入姓名"/>
+            <input class="form-input" name="uname" placeholder="请输入姓名"/>
           </view>
           <view class="form-item">
             <view class="form-label">
               手机号
             </view>
-            <input class="form-input" name="telphone" placeholder="请输入手机号"/>
+            <input class="form-input" name="mobile" placeholder="请输入手机号" type="number" maxlength="11"/>
           </view>
           <view class="form-item">
             <view class="form-label">
               身份证号
             </view>
-            <input class="form-input" name="idcard" placeholder="请输入身份证号"/>
+            <input class="form-input" name="idCardNo" placeholder="请输入身份证号" type="idcard" maxlength="18"/>
           </view>
           <view class="form-item">
             <view class="form-label">
               家庭住址
             </view>
-            <input class="form-input" name="address" placeholder="请输入家庭住址"/>
+            <input class="form-input" name="address" placeholder="请输入家庭住址" maxlength="50"/>
           </view>
         </view>
         <button form-type="submit" class="submit-button" :disabled="submitLoading">提交</button>
@@ -44,13 +44,29 @@ export default {
   data() {
     return {
       submitLoading: false,
+      uname: '',
+
     }
   },
   methods: {
     submitForm(e) {
       console.log(e)
       this.submitLoading = true
-    }
+      let data = e.detail.value
+      this.services.post('/user_records', data)
+      .then(res => {
+        uni.showToast({
+          title: '提交成功',
+          icon: 'success',
+          duration: 2500,
+          mask: true,
+          complete() {
+            uni.navigateBack()
+          }
+        })
+      })
+    },
+    
   }
 }
 </script>
