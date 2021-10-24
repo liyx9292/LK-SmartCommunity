@@ -35,8 +35,12 @@ export default {
     getUserInfo(res) {
       let { userInfo } = res.detail
       if (userInfo) {
-        this.utils.setStorage(Constants.USER_INFO, userInfo)
-        this.isShowModal = true
+        this.utils.login()
+        .then(res => {
+          console.log(this)
+          debugger
+          this.isShowModal = true
+        })
       }
     },
     switchShowModal() {
@@ -44,10 +48,22 @@ export default {
       this.isShowModal = !showValue
     },
     getPhoneNumber(e) {
-      console.log(e)
-      debugger
-      let { detail } = e.detail
-      this.utils.jumpPage('/pages/index/index', true)
+      let detail = e.detail
+      this.services.post('/getPhone.html', detail)
+      .then(res => {
+        uni.showToast({
+          title: '绑定手机号成功',
+          icon: 'success',
+          duration: 2500,
+          mask: true,
+          complete:() => {
+            setTimeout(() => {
+              this.utils.jumpPage('/pages/index/index', true)
+            }, 2500)
+          }
+        })
+      })
+      
     }
   }
 }

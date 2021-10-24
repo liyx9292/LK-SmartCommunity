@@ -21,8 +21,8 @@
           <input class="search-input" @focus="focusSearch" @blur="blurSearch" @confirm="submitSearch" @input="e => inputSearch(e, 'firstSearchText')"/>
         </view>
         <view class="tag-container">
-          <view class="tag-item" v-for="item in tags" :key="item">
-            {{ item }}
+          <view class="tag-item" v-for="item in tags" :key="item" @click="clickTag(item)">
+            {{ item.cate_name }}
           </view>
         </view>
       </view>
@@ -86,8 +86,8 @@ export default {
       tabList: ['applying', 'applyed'],
       nowTab: 'applying',
       tags: [],
+      nowCateId: '',
       firstSearchText: '',
-      secondSearchText: '',
       applyingList: [1,2,3,4],
       applyingPage: 1,
       joinedList: [],
@@ -96,15 +96,23 @@ export default {
     }
   },
   onLoad() {
-    this.getTags()
+    // this.getTags()
+    this.getActivityCate(this.getActivity)
   },
   methods: {
+    getActivityCate(fn) {
+      this.services.get('/getActivesCate.html')
+      .then(res => {
+        this.tags = res
+        fn && fn()
+      })
+    },
     getActivity(page = 1, keys = '') {
       let params = {
         page: page,
         keys: keys,
+        cate_id: this.nowCateId,
         pageSize: 20,
-        cate_id: '',
       }
       this.services.get('/getActives.html', params)
       .then(res => {
@@ -162,8 +170,18 @@ export default {
       tags.unshift(data)
       this.utils.setStorage(TAG_HISTORIES, tags)
     },
-    clickTag(itemText) {
-      this.submitSearch({detail: {value: itemText}})
+    clickTag(item) {
+      // this.submitSearch({detail: {value: itemText}})
+      this.nowCateId = item.cate_id
+      this.getActivity()
+    }
+  },
+  watch: {
+    nowTab(newValue) {
+      this.nowCateId = ''
+      this.firstSearchText = ''
+      let fn = newValue === 'applying' ? this.getActivity : this.getJoinedActivity
+      fn()
     }
   },
   onReachBottom() {

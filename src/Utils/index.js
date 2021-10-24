@@ -40,26 +40,22 @@ function getStorage(name) {
   return data
 }
 
+function cleanStorage(name) {
+  uni.removeStorageSync(name)
+}
+
 // 登录
-function login() {
+async function login(userInfo, isAuth) {
   let loginCode = getStorage(Constants.LOGIN_CODE)
-  checkSession()
-  .then(res => {
-    if (!res || !loginCode) {
-      uni.login({
-        provider: 'weixin',
-        success(loginRes) {
-          setStorage(Constants.LOGIN_CODE, loginRes.code)
-          loginCode = loginRes.code
-          return getUserInfo()
-        }
-      })
-    } else {
-      console.log(123)
-      return getUserInfo()
+  try {
+    let checkRes = await checkSession()
+    if (!checkRes || !loginCode) {
+      let wxCode = await wxLogin()
+      loginCode = wxCode
     }
-  })
-  .then(userInfo => {
+    if (!userInfo) {
+      userInfo = await getUserInfo()
+    }
     let params = {
       code: loginCode,
       encrypted_data: userInfo.encryptedData,
@@ -67,14 +63,29 @@ function login() {
       iv: userInfo.iv,
       signature: userInfo.signature,
     }
-    return requestLogin(params)
-    // TODO: 暂时不登录
+    let getToken = await requestLogin(params)
+    setStorage(Constants.TOKEN, getToken.token)
+    cleanStorage(Constants.LOGIN_CODE)
+    return true
+  } catch(err) {
+    console.log(err)
+    debugger
+  }
+}
+
+function wxLogin() {
+  return new Promise((resolve, reject) => {
+    uni.login({
+      provider: 'weixin',
+      success(loginRes) {
+        setStorage(Constants.LOGIN_CODE, loginRes.code)
+        resolve(loginRes.code)
+      },
+      fail(rej) {
+        console.log(rej)
+      }
+    })
   })
-  .then(res => {
-    // 请求登录
-    setStorage(Constants.TOKEN, res.token)
-  })
-  .catch(reject => reject)
 }
 
 function requestLogin(loginData) {
@@ -130,6 +141,7 @@ export default {
   jumpPage,
   setStorage,
   getStorage,
+  cleanStorage,
   login,
   saveHistory,
 }
