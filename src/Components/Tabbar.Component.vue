@@ -43,6 +43,11 @@
       switchPage(tab) {
         if (tab.id === 3) {
           // 扫码打卡方法
+          uni.scanCode({
+            success: res => {
+
+            }
+          })
         } else {
           if (tab.path === this.nowPath) return
           this.utils.jumpPage(tab.path, true)

@@ -5,7 +5,7 @@
         <image src="/static/icons/icon_search.png"/>
         <text>{{placeholder}}</text>
       </view>
-      <input class="search-input" @focus="focusSearch" @blur="blurSearch" @confirm="submitSearch" @input="e => inputSearch(e, 'secondSearchText')"/>
+      <input class="search-input" @focus="focusSearch" @blur="blurSearch" @confirm="submitSearch" v-model="searchText" @input="e => inputSearch(e, 'secondSearchText')"/>
     </view>
   </view>
 </template>

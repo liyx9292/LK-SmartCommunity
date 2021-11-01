@@ -28,8 +28,8 @@
       </view>
       <!-- 列表 -->
       <list class="list">
-        <cell v-for="item in applyingList" :key="item">
-          <ActivityCard />
+        <cell v-for="item in applyingList" :key="item.active_id">
+          <ActivityCard :activityItem="item"/>
         </cell>
       </list>
     </template>
@@ -52,8 +52,8 @@
           进行中
         </view>
         <list class="list">
-          <cell v-for="item in applyingList" :key="item">
-            <ActivityCard :isDuration="true" />
+          <cell v-for="item in joinedList" :key="item.active_id">
+            <ActivityCard :isDuration="true" :activityItem="item"/>
           </cell>
         </list>
       </view>
@@ -64,8 +64,8 @@
           已完成
         </view>
         <list class="list">
-          <cell v-for="item in applyingList" :key="item">
-            <ActivityCard :isFinished="true" />
+          <cell v-for="item in joinedList" :key="item.active_id">
+            <ActivityCard :isFinished="true" :activityItem="item"/>
           </cell>
         </list>
       </view>
@@ -88,7 +88,7 @@ export default {
       tags: [],
       nowCateId: '',
       firstSearchText: '',
-      applyingList: [1,2,3,4],
+      applyingList: [],
       applyingPage: 1,
       joinedList: [],
       joinedPage: 1,
@@ -116,8 +116,8 @@ export default {
       }
       this.services.get('/getActives.html', params)
       .then(res => {
-        this.applyingPage = page
-        
+        this.applyingPage = res.current_page
+        this.applyingList = res.data
       })
     },
     getJoinedActivity(page = 1, keys = '') {
@@ -129,8 +129,8 @@ export default {
       }
       this.services.get('/getJoinActives.html', params)
       .then(res => {
-        this.joinedPage = page
-
+        this.joinedPage = res.current_page
+        this.joinedList = res.data
       })
     },
     switchTab(value) {
@@ -150,8 +150,8 @@ export default {
       let value = e.detail.value
       // TODO: 接口
 
-      this.saveTags(value)
-      this.getTags()
+      // this.saveTags(value)
+      // this.getTags()
       let fn = this.nowTab === 'applying' ? this.getActivity : this.getJoinedActivity
       fn(1, value)
     },

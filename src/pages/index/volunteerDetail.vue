@@ -1,7 +1,7 @@
 <template>
   <view class="body">
     <SearchInput @submitSearch="submitSearch"/>
-    <ActivityCard />
+    <ActivityCard :isDuration="detail.isDuration" :activityItem="detail"/>
     <view class="activity-detail-container">
       <view class="activity-detail-bar" :class="{isDuration: detail.isDuration}">
         <template v-if="!detail.isDuration">
@@ -10,7 +10,7 @@
               总需(人)
             </view>
             <view class="detail-item-num">
-              50
+              {{detail.need_hands}}
             </view>
           </view>
           <view class="detail-item">
@@ -18,7 +18,7 @@
               报名(人)
             </view>
             <view class="detail-item-num">
-              50
+              21
             </view>
           </view>
         </template>
@@ -28,7 +28,7 @@
               总需(人)
             </view>
             <view class="detail-item-num">
-              50
+              {{detail.need_hands}}
             </view>
           </view>
           <view class="detail-item">
@@ -36,7 +36,7 @@
               报名(人)
             </view>
             <view class="detail-item-num spacial-color">
-              50
+              23
             </view>
           </view>
           <view class="detail-item">
@@ -44,7 +44,7 @@
               打卡(人)
             </view>
             <view class="detail-item-num special-color">
-              50
+              12
             </view>
           </view>
         </template>
@@ -61,10 +61,10 @@
             <cell v-for="item in noArriveList" :key="item">
               <view class="member-bar">
                 <view class="member-name">
-                  刘翔
+                  {{item.name}}
                 </view>
                 <view class="member-phone">
-                  12345678901
+                  {{item.tel}}
                 </view>
                 <image class="member-image" src="/static/icons/icon_signIn.png" @click="handleSignIn(item)"/>
                 <image class="member-image" src="/static/icons/icon_callPhone.png" @click="handlePhoneCall(item)"/>
@@ -81,10 +81,10 @@
             <cell v-for="item in arrivedList" :key="item">
               <view class="member-bar">
                 <view class="member-name">
-                  刘翔
+                  {{item.name}}
                 </view>
                 <view class="member-phone">
-                  12345678901
+                  {{item.tel}}
                 </view>
                 <image class="member-image" src="/static/icons/icon_signIn.png" />
                 <image class="member-image" src="/static/icons/icon_callPhone.png" />
@@ -110,11 +110,36 @@ export default {
       detail: {
         isDuration: true,
       },
-      noArriveList: [1,2,3,4],
-      arrivedList: [1,1,1,1,1],
+      noArriveList: [
+        {name: '张三', tel: '13912402301'},
+        {name: '李四', tel: '18145027492'},
+        {name: '周祥', tel: '15682947650'},
+        {name: '刘玉环', tel: '17328301265'},
+      ],
+      arrivedList: [
+        {name: '孟展鸿', tel: '13984735932'},
+        {name: '秦霄', tel: '15125938533'},
+        {name: '黄光正', tel: '13825749304'},
+        {name: '郭子良', tel: '17725748593'},
+      ],
     }
   },
+  onLoad(e) {
+    this.id = e.id
+    this.getDetail()
+  },
   methods: {
+    getDetail() {
+      let params = {
+        active_id: this.id
+      }
+      this.services.post('/getActInfo.html', params)
+      .then(res => {
+        let item = this.utils.getStorage('activeDetail')
+        console.log(item)
+        this.detail = item
+      })
+    },
     submitSearch(e) {
       console.log(e)
     },

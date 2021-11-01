@@ -6,7 +6,7 @@
     <view class="list">
       <list>
         <cell v-for="item in list" :key="item">
-          <GoodsItem />
+          <GoodsItem :goodsItem="item" goodsType="integral"/>
         </cell>
       </list>
     </view>
@@ -35,6 +35,7 @@ export default {
   methods: {
     submitSearch(e) {
       this.searchText = e
+      this.getGoodsList()
     },
     getGoodsList() {
       let params = {

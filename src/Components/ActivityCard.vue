@@ -2,17 +2,17 @@
   <view class="card" @click="jumpDetail">
     <!-- 图片 -->
     <view class="card-image-block" :class="{finishedCard: isFinished}">
-      <image class="card-image" :src="activityItem.image"/>
+      <image class="card-image" :src="activityImage"/>
     </view>
     <view class="card-right">
       <view class="card-title">
-        {{activityItem.title}}
+        {{activityItem.active_name}}
       </view>
       <view class="card-info">
         <view class="card-desc">
           <view class="desc-bar">
             <image class="desc-icon" src="/static/icons/icon_users.png" />
-            <text>50人</text>
+            <text>{{activityItem.need_hands}}人</text>
           </view>
           <view class="desc-bar">
             <image class="desc-icon" src="/static/icons/icon_time.png" />
@@ -20,12 +20,12 @@
           </view>
           <view class="desc-bar">
             <image class="desc-icon" src="/static/icons/icon_date.png" />
-            <text>2021年08月23日</text>
+            <text>{{finishTime}}</text>
           </view>
         </view>
         <template v-if="!isFinished">
           <view class="card-integral">
-            <text class="number">15</text>
+            <text class="number">{{activityItem.need_hands}}</text>
             <text>分/时</text>
             <view v-if="isDuration" class="clickButton">
               点击查看
@@ -49,13 +49,14 @@
   </view>
 </template>
 <script>
+import config from '@/config'
 export default {
   props:{
     activityItem: {
       type: Object,
       default: {
-        image: '',
-        title: '我是标题',
+        img: '',
+        active_name: '我是标题',
       }
     },
     isFinished: {
@@ -69,9 +70,31 @@ export default {
   },
   methods: {
     jumpDetail() {
-      let id = this.activityItem.id || 0
+      let id = this.activityItem.active_id || 0
       if (this.isFinished) return
+      // test
+      let activityItem = this.activityItem
+      activityItem.isDuration = this.isDuration
+      this.utils.setStorage('activeDetail', activityItem)
+      // test
       this.utils.jumpPage(`/pages/index/volunteerDetail?id=${id}`)
+    }
+  },
+  computed: {
+    activityImage() {
+      let imgUrl = this.activityItem.img || ''
+      return `${config.baseUrl}${imgUrl}`
+    },
+    finishTime() {
+      let time = this.activityItem.end_time || ''
+      if (!time) {
+        return '2021年11月20日'
+      } else {
+        let year = time.slice(0, 4)
+        let month = time.slice(5, 7)
+        let day = time.slice(8, 10)
+        return `${year}年${month}月${day}日`
+      }
     }
   }
 }

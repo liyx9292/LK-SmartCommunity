@@ -21,12 +21,13 @@
       <Step3
         @prevStep="prevStep"
         @nextStep="nextStep"
+        @returnIndex="returnIndex"
       />
     </template>
 
 
 
-    <Tabbar />
+    <Tabbar ref="tabbar"/>
   </scroll-view>
 </template>
 <script>
@@ -53,15 +54,16 @@ export default {
     return {
       scrollTopNum: -1,
       nowStep: 1,
-      communityList: [1,2,2,2,1,1],
+      communityList: [
+        { name: '兴福小区', buildNum: 3, unitNum: 2, roomNum: 20 },
+        { name: '和谐小区', buildNum: 8, unitNum: 8, roomNum: 6 },
+        { name: '天鹅湖小区', buildNum: 12, unitNum: 4, roomNum: 18 },
+      ],
       step1Data: {},
       step2Data: {},
     }
   },
   methods: {
-    test() {
-      this.communityList = [1,2,3,4,5]
-    },
     nextStep(data, stepKey) {
       this[stepKey] = data
       let nowStepNum = stepKeyValue[stepKey]
@@ -82,6 +84,9 @@ export default {
         // this.$emit('scrollTop', offsetTop + data.top)
         this.scrollTopNum = -buttonHeight
       }).exec();
+    },
+    returnIndex() {
+      this.$refs.tabbar.switchPage({path: '/pages/index/index'})
     }
   }
 }

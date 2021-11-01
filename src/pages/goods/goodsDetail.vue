@@ -3,17 +3,17 @@
     <!-- 图片 -->
     <swiper class="image-swiper">
       <swiper-item v-for="item in images" :key="item">
-        <image class="image-item" src=""/>
+        <image class="image-item" :src="`${url}${goodsDetail.images}`"/>
       </swiper-item>
     </swiper>
     <!-- 详细信息 -->
     <view class="infomation">
       <view class="title-bar">
         <view class="title">
-          我是标题
+          {{ goodsDetail.goods_name }}
         </view>
         <view class="price">
-          <text class="num">105</text>
+          <text class="num">{{ handlePrice }}</text>
           积分
         </view>
       </view>
@@ -29,7 +29,7 @@
 
     </view>
 
-    <button class="button">{{ pageType === 'integral' ? '立即兑换' : '点击核销' }}</button>
+    <button class="button" @click="submit">{{ pageType === 'integral' ? '立即兑换' : '点击核销' }}</button>
     
   </view>
 </template>
@@ -38,11 +38,73 @@
 // 商品名称过长怎么显示
 // 内容过少是真的吗
 // @pageType: {integral} {check}
+import config from '@/config'
 export default {
   data() {
     return {
+      url: config.baseUrl,
+      id: '',
+      goodsDetail: {},
       pageType: 'check',
       images: [1,2,3],
+    }
+  },
+  onLoad(e) {
+    this.id = e.id
+    this.pageType = e.goodsType
+    this.getDetail()
+  },
+  methods: {
+    getDetail() {
+      let params = {
+        id: this.id,
+      }
+      this.services.get('/getGoodsDetail.html', params)
+      .then(res => {
+        this.goodsDetail = res
+      })
+    },
+    submit() {
+      if (this.pageType === 'integral') {
+        this.duihuan()
+      } else {
+        this.checkGoods()
+      }
+    },
+    duihuan() {
+      uni.showModal({
+        title: '确定兑换',
+        content: '是否兑换这个商品',
+        success: () => {
+          this.utils.showToast('兑换成功', 'success', '', 2500)
+          return
+          let params = {
+            goods_id: this.id,
+            goods_num: 1,
+          }
+          this.services.post('/orders.html', params)
+          .then(res => {
+            uni.showToast({
+              title: '兑换成功',
+            })
+          })
+        },
+      })
+    },
+    checkGoods() {
+      uni.showModal({
+        title: '确定核销',
+        content: '是否核销这个商品',
+        success: () => {
+          this.utils.showToast('核销成功', 'success', '', 2500)
+        },
+      })
+    },
+  },
+  computed: {
+    handlePrice() {
+      let price = this.goodsDetail.price || '0'
+      return parseFloat(price)
     }
   }
 }

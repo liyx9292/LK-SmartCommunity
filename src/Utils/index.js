@@ -1,5 +1,6 @@
 import { default as Constants } from './constants'
 import services from './services'
+import { showToast } from './toast'
 const request = services.request
 
 function getAuthorize(scope, cb, fb) {
@@ -144,4 +145,5 @@ export default {
   cleanStorage,
   login,
   saveHistory,
+  showToast,
 }

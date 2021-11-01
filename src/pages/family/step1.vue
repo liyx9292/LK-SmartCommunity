@@ -12,8 +12,9 @@
           @change="bindPickerChange"
           :range="communityList"
           :value="communityIndex"
+          range-key="name"
         >
-          <text>{{communityList[communityIndex]}}</text>
+          <text>{{communityList[communityIndex].name}}</text>
         </picker>
         <image class="select-arrow" src="/static/icons/family_downArrow.png" />
       </view>
@@ -64,9 +65,9 @@ export default {
         roomValue: null,
       },
       focusInputKey: '',
-      buildNum: 2,
-      unitNum: 3,
-      roomNum: 4,
+      buildNum: 3,
+      unitNum: 2,
+      roomNum: 20,
     }
   },
   computed: {
@@ -78,12 +79,23 @@ export default {
       return obj
     }
   },
+  onLoad() {
+    
+  },
   methods: {
     input(e, keyName) {
       this.inputData[keyName] = e.detail.value
     },
     focusInput(keyName = '') {
       this.focusInputKey = keyName
+    },
+    bindPickerChange(e) {
+      let index = e.detail.value
+      let item = this.communityList[index]
+      this.communityIndex = index
+      this.buildNum = item.buildNum
+      this.unitNum = item.unitNum
+      this.roomNum = item.roomNum
     },
     pickerChange(e, label) {
       let arr = this.buildTree[`${label}NumArr`]
@@ -125,12 +137,15 @@ export default {
     }
   },
   watch: {
-    communityList: (newValue, oldValue) => {
-      console.log('---test---')
-      console.log(newValue)
-    },
     step1Data: (newValue, oldValue) => {
 
+    },
+    communityIndex() {
+      this.inputData = {
+        buildValue: null,
+        unitValue: null,
+        roomValue: null,
+      }
     }
   }
 }
