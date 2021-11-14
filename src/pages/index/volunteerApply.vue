@@ -53,19 +53,10 @@ export default {
       console.log(e)
       this.submitLoading = true
       let data = e.detail.value
-      this.utils.showToast('提交成功', 'success', () => uni.navigateBack(), 2500)
-      return
-      this.services.post('/user_records', data)
+      
+      this.services.post('/applyVolunteer', data)
       .then(res => {
-        // uni.showToast({
-        //   title: '提交成功',
-        //   icon: 'success',
-        //   duration: 2500,
-        //   mask: true,
-        //   complete() {
-        //     uni.navigateBack()
-        //   }
-        // })
+        this.utils.showToast('提交成功', 'success', () => uni.navigateBack(), 2500)
       })
     },
     

@@ -8,6 +8,12 @@
 			}
 		},
 		{
+			"path": "pages/index/newsDetail", // 新闻详情
+			"style": {
+				"navigationBarTitleText": "新闻详情"
+			}
+		},
+		{
 			"path": "pages/index/volunteerApply", //志愿者申请
 			"style": {
 				"navigationBarTitleText": "志愿者申请"

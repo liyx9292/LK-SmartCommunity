@@ -7,6 +7,7 @@ let constants = {
   STEP1DATA: 'step1Data',
   STEP2DATA: 'step2Data',
   STEP3DATA: 'step3Data',
+  CIVILIZED_DATA: 'civilizedData',
 }
 
 export default constants

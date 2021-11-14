@@ -101,10 +101,10 @@
 <script>
 import { default as Constants } from '@/Utils/constants'
 const modalDataKey = {
-  modalInputName: { myKey: 'name', label: '姓名' },
-  modalInputGender: { myKey: 'gender', label: '性别' },
-  modalInputTel: { myKey: 'tel', label: '电话号码' },
-  modalInputId: { myKey: 'id', label: '身份证号' },
+  modalInputName: { myKey: 'uname', label: '姓名' },
+  modalInputGender: { myKey: 'sex', label: '性别' },
+  modalInputTel: { myKey: 'mobile', label: '电话号码' },
+  modalInputId: { myKey: 'idCardNo', label: '身份证号' },
 }
 let buttonHeight = 0
 export default {
@@ -142,18 +142,18 @@ export default {
       console.log('初始化step2', step2Data)
       if (step2Data) {
         this.familyMember = step2Data.familyMember || []
-        for (let i in modalDataKey) {
-          let keyName = modalDataKey[i].myKey
-          let inputKey = i
+        let ownerData = step2Data.ownerData
+        for (let inputKey in modalDataKey) {
+          let keyName = modalDataKey[inputKey].myKey
           inputKey = inputKey.substring(5, inputKey.length)
           inputKey = inputKey.replace('I', 'i')
-          this[inputKey] = step2Data[keyName]
+          this[inputKey] = ownerData[keyName]
         }
       }
     },
     nextStep() {
-      let userData = this.inputRealData
-      let result = this.validateUser(userData)
+      let ownerData = this.inputRealData
+      let result = this.validateUser(ownerData)
       if (!result.isPass) {
         if (result.errMsg) {
           uni.showToast({
@@ -164,9 +164,9 @@ export default {
         }
         return
       }
-      let step2Data = { ...userData, familyMember: this.familyMember }
+      let step2Data = { ownerData, familyMember: this.familyMember }
       this.utils.setStorage(Constants.STEP2DATA, step2Data)
-      this.$emit('nextStep', {}, 'step2Data')
+      this.$emit('nextStep', step2Data, 'step2Data')
     },
     prevStep() {
       this.$emit('prevStep')
@@ -204,6 +204,7 @@ export default {
         }
         return
       }
+      data.attrType = 1
       this.familyMember.push(data)
       this.showModal = false
       this.defaultModalData()
@@ -245,6 +246,7 @@ export default {
         let keyName = modalDataKey[i].myKey
         realData[keyName] = this[i]
       }
+      realData.attrType = 2
       return realData
     },
     inputRealData() {

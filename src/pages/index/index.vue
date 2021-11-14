@@ -1,13 +1,16 @@
 <template>
 	<view class="body">
 		<!-- 顶部banner -->
-		<swiper class="top-banner" autoplay duration="5000">
-			<swiper-item>
+		<view class="top-banner" autoplay duration="5000">
+			<!-- <swiper-item> -->
 				<view class="banner-item">
-					<image class="banner-image" src="" mode="widthFix"/>
+					<image class="banner-image" src="../../static/banner-bg.png"/>
 				</view>
-			</swiper-item>
-		</swiper>
+			<!-- </swiper-item> -->
+			<view class="banner-tips" :style="{paddingTop: `${statusHeight}rpx`}">
+				文明行为银行
+			</view>
+		</view>
 
 		<!-- 4个按钮 -->
 		<view class="button-group">
@@ -30,7 +33,7 @@
 				<swiper class="tips-right-swiper">
 					<swiper-item>
 						<view class="tips-item">
-							asdasdasd
+							关于新冠肺炎的报告
 						</view>
 					</swiper-item>
 				</swiper>
@@ -40,7 +43,7 @@
 		<!-- 新闻列表 -->
 		<list class="news-list">
 			<cell v-for="item in newsList" :key="item.id">
-				<view class="news-item" :class="{soloImageNews: item.images.length === 1}">
+				<view class="news-item" :class="{soloImageNews: item.images.length === 1}" @click="jumpNews(item)">
 					<template v-if="item.images.length !== 1">
 						<view class="news-title">
 							<view v-if="item.isTop" class="news-title-top">
@@ -53,7 +56,7 @@
 							<text>{{item.create_time}}</text>
 						</view>
 						<view class="news-images-container">
-							<image class="news-image-item" v-for="(imageItem, index) in item.images" :key="index" :src="imageItem"/>
+							<image class="news-image-item" v-for="(imageItem, index) in item.images" :key="index" :src="imageItem" mode="widthFix"/>
 						</view>
 					</template>
 					<template v-else>
@@ -70,7 +73,7 @@
 							</view>
 						</view>
 						<view class="news-right">
-							<image class="news-image-item" :src="item.images[0]"/>
+							<image class="news-image-item" :src="item.images[0]" mode="widthFix"/>
 						</view>
 					</template>
 				</view>
@@ -89,6 +92,7 @@
 		},
 		data() {
 			return {
+				statusHeight: 0,
 				banners: [],
 				buttonGroup: [
 					{ id: 1, label: '志愿者申请', path: '/pages/index/volunteerApply' },
@@ -106,6 +110,8 @@
 			}
 		},
 		onLoad() {
+			let statusHeight = this.utils.getStorage('statusBarHeight')
+    	this.statusHeight = statusHeight
 			this.getNews()
 		},
 		methods: {
@@ -120,6 +126,10 @@
 					})
 					this.newsList = res
 				})
+			},
+			jumpNews(item) {
+				this.utils.setStorage('newsDetail', item)
+				this.utils.jumpPage('/pages/index/newsDetail')
 			}
 		}
 	}
@@ -127,14 +137,30 @@
 <style lang="scss">
 .body {
 	padding-bottom: 150rpx;
+	min-height: 100vh;
 }
 .top-banner {
-	width: 100%;
+	width: 750rpx;
 	height: 350rpx;
 	background: #ccc;
+	// position: relative;
+	display: block;
 	.banner-item {
-		width: 100%;
-		height: 100%;
+		width: 750rpx;
+		height: 350rpx;
+		display: block;
+		.banner-image {
+			width: 100%;
+			height: 100%;
+			display: block;
+		}
+	}
+	.banner-tips {
+		position: absolute;
+		left: 20rpx;
+		top: 20rpx;
+		font-size: 30rpx;
+		color: #fff;
 	}
 }
 .button-group {
@@ -149,6 +175,7 @@
 	box-sizing: border-box;
 	justify-content: space-between;
 	padding: 25rpx;
+	z-index: 9;
 	.button-item {
 		width: 120rpx;
 		.button-image {
@@ -292,6 +319,7 @@
 		.news-right {
 			width: 220rpx;
 			height: 170rpx;
+			overflow: hiddennews-images-container;
 			.news-image-item {
 				margin-right: 0rpx !important;
 			}

@@ -4,7 +4,6 @@
 
     <template v-if="nowStep === 1">
       <Step1
-        :communityList="communityList"
         @nextStep="nextStep"
       />
     </template>
@@ -54,14 +53,13 @@ export default {
     return {
       scrollTopNum: -1,
       nowStep: 1,
-      communityList: [
-        { name: '兴福小区', buildNum: 3, unitNum: 2, roomNum: 20 },
-        { name: '和谐小区', buildNum: 8, unitNum: 8, roomNum: 6 },
-        { name: '天鹅湖小区', buildNum: 12, unitNum: 4, roomNum: 18 },
-      ],
       step1Data: {},
       step2Data: {},
+      step3Data: {},
     }
+  },
+  onLoad() {
+
   },
   methods: {
     nextStep(data, stepKey) {
@@ -69,6 +67,35 @@ export default {
       let nowStepNum = stepKeyValue[stepKey]
       if (nowStepNum === 3) {
         // TODO: 3页数据完成提交
+        let { oldList, warningList } = this.step3Data
+        let step2Data = this.step2Data
+        let step1Data = this.step1Data
+        // 判断家庭组成员是否紧急和老人
+        let familyMember = step2Data.familyMember
+        let warningUser = {}
+        familyMember.forEach((item, index) => {
+          if (warningList.includes(index)) {
+            item.attrType = 1 // 紧急联系人
+            warningUser.contact = item.uname
+            warningUser.telphone = item.mobile
+          }
+          if (oldList.includes(index)) {
+            item.attrType = 3
+          }
+        })
+        familyMember.push(step2Data.ownerData)
+        let params = {
+          ...step1Data,
+          ...warningUser,
+          info: familyMember
+        }
+        console.log(params)
+        debugger
+        this.services.post('/familyAdd.html', params)
+        .then(res => {
+          console.log(res)
+          debugger
+        })
       } else {
         this.nowStep = nowStepNum + 1
       }

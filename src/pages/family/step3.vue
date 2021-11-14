@@ -8,10 +8,10 @@
       <view class="user-container">
         <view class="user-item" :class="{actUser: warningList.includes(index)}" v-for="(item, index) in familyMember" :key="index" @click="setSpecial(index, 'warningList')">
           <view class="user-name">
-            {{ item.name }}
+            {{ item.uname }}
           </view>
           <view class="user-tel">
-            {{ item.tel }}
+            {{ item.mobile }}
           </view>
         </view>
       </view>
@@ -24,7 +24,7 @@
       <view class="user-container">
         <view class="user-item special-user" :class="{actUser: oldList.includes(index)}" v-for="(item, index) in familyMember" :key="index" @click="setSpecial(index, 'oldList')">
           <view class="user-name">
-            {{ item.name }}
+            {{ item.uname }}
           </view>
         </view>
       </view>
@@ -62,22 +62,34 @@ export default {
     setSpecial(index, key) {
       let arr = this[key]
       let isIndex = arr.indexOf(index)
-      console.log(isIndex, arr)
       if (isIndex >= 0) {
         arr.splice(isIndex, 1)
       } else {
+        if (key === 'warningList' && arr.length > 0) {
+          arr.splice(0, 1)
+        }
         arr.push(index)
       }
       this[key] = arr
     },
     nextStep() {
-      uni.showModal({
-        title: '确认提交',
-        content: '是否提交家庭信息',
-        success: () => {
-          this.utils.showToast('填写成功', 'success', () => {this.$emit('returnIndex')}, 2000)
-        },
-      })
+      let warningList = this.warningList
+      if (warningList.length === 0) {
+        this.utils.showToast('紧急联系人为空', 'error', () => {}, 2000)
+        return
+      }
+      let step3Data = {
+        warningList: this.warningList,
+        oldList: this.oldList,
+      }
+      this.$emit('nextStep', step3Data, 'step3Data')
+      // uni.showModal({
+      //   title: '确认提交',
+      //   content: '是否提交家庭信息',
+      //   success: () => {
+      //     this.utils.showToast('填写成功', 'success', () => {this.$emit('returnIndex')}, 2000)
+      //   },
+      // })
     }
   }
 }
