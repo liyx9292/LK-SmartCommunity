@@ -14,7 +14,7 @@
 
 		<!-- 4个按钮 -->
 		<view class="button-group">
-			<view class="button-item" v-for="(item, index) in buttonGroup" :key="item.id" @click="jumpPage(item.path)">
+			<view class="button-item" v-for="(item, index) in buttonGroup" :key="item.id" @click="jumpPage(item)">
 				<image class="button-image" :src="`../../static/index/index_buttons_${index + 1}.png`" />
 				<view class="button-text">
 					{{item.label}}
@@ -23,7 +23,7 @@
 		</view>
 
 		<!-- 资讯信息 -->
-		<view class="tips-block">
+		<!-- <view class="tips-block">
 			<view class="tips-container">
 				<view class="tips-left-background"/>
 				<view class="tips-left-text">
@@ -38,7 +38,7 @@
 					</swiper-item>
 				</swiper>
 			</view>
-		</view>
+		</view> -->
 
 		<!-- 新闻列表 -->
 		<list class="news-list">
@@ -86,6 +86,7 @@
 <script>
   import Tabbar from '@/Components/Tabbar.Component.vue'
 	import config from '@/config'
+	import { default as Constants } from '@/Utils/constants'
 	export default {
 		components: {
 			Tabbar,
@@ -115,8 +116,18 @@
 			this.getNews()
 		},
 		methods: {
-			jumpPage(path) {
-				this.utils.jumpPage(path)
+			jumpPage(item) {
+				if (item.id === 1) {
+					let userInfo = this.utils.getStorage(Constants.USER_INFO)
+					if (userInfo.is_volunteer === 2) {
+						this.utils.showModal('', '您已经是志愿者', false)
+						return
+					} else if (userInfo.is_volunteer === 1) {
+						this.utils.showModal('审核中', '请等待审核结果', false)
+						return
+					}
+				}
+				this.utils.jumpPage(item.path)
 			},
 			getNews() {
 				this.services.request('/getNewsList.html')

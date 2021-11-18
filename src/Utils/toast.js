@@ -13,7 +13,22 @@ function showToast(title = '', type = 'success', fn, timeout = 2000) {
     }
   })
 }
+function showModal(title = '', content = '', showCancel = false, successFn, failFn) {
+  uni.showModal({
+    title: title,
+    content: content,
+    mask: true,
+    showCancel: showCancel,
+    success() {
+      successFn && successFn()
+    },
+    fail() {
+      failFn && failFn()
+    }
+  })
+}
 
 export {
-  showToast
+  showToast,
+  showModal
 }

@@ -2,7 +2,7 @@
   <view class="body">
     <!-- <list> -->
       <!-- <cell v-for="item in communityList" :key="item"> -->
-        <view class="community-item" @click="jumpUnit(item)">
+        <view class="community-item" @click="jumpUnit()" v-if="buildInfo.quartersName">
           <view class="community-name">
             {{ buildInfo.quartersName }}
           </view>

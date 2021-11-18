@@ -7,35 +7,54 @@
       </view>
     </view>
     <!-- 表单 -->
-      <form @submit="submitForm">
-        <view class="form">
-          <view class="form-item">
-            <view class="form-label">
-              姓名
-            </view>
-            <input class="form-input" name="uname" placeholder="请输入姓名"/>
+    <form @submit="submitForm">
+      <view class="form">
+        <view class="form-item">
+          <view class="form-label">
+            姓名
           </view>
-          <view class="form-item">
-            <view class="form-label">
-              手机号
-            </view>
-            <input class="form-input" name="mobile" placeholder="请输入手机号" type="number" maxlength="11"/>
+          <input class="form-input" name="uname" placeholder="请输入姓名"/>
+        </view>
+        <view class="form-item">
+          <view class="form-label">
+            手机号
           </view>
-          <view class="form-item">
-            <view class="form-label">
-              身份证号
-            </view>
-            <input class="form-input" name="idCardNo" placeholder="请输入身份证号" type="idcard" maxlength="18"/>
+          <input class="form-input" name="mobile" :value="mobile" type="number" maxlength="11" disabled/>
+          <button v-if="!mobile" class="getPhoneNumber" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">获取手机号</button>
+        </view>
+        <view class="form-item">
+          <view class="form-label">
+            身份证号
           </view>
-          <view class="form-item">
-            <view class="form-label">
-              家庭住址
-            </view>
-            <input class="form-input" name="address" placeholder="请输入家庭住址" maxlength="50"/>
+          <input class="form-input" name="idCardNo" placeholder="请输入身份证号" type="idcard" maxlength="18"/>
+        </view>
+        <view class="form-item">
+          <view class="form-label">
+            家庭住址
+          </view>
+          <input class="form-input" name="address" placeholder="请输入家庭住址" maxlength="50"/>
+        </view>
+      </view>
+      <button form-type="submit" class="submit-button" :disabled="submitLoading">提交</button>
+    </form>
+    <!-- 授权手机号 -->
+    <view class="modal" v-if="isShowModal">
+      <view class="modal-block">
+        <view class="title">
+          <image class="title-icon" src="/static/index/logo.png" />
+          <view class="title-big">
+            智慧社区
+          </view>
+          <view class="title-small">
+            申请使用
           </view>
         </view>
-        <button form-type="submit" class="submit-button" :disabled="submitLoading">提交</button>
-      </form>
+        <view class="tel-text">
+          您的手机号
+        </view>
+        
+      </view>
+    </view>
   </view>
 </template>
 <script>
@@ -45,21 +64,34 @@ export default {
     return {
       submitLoading: false,
       uname: '',
-
+      mobile: '',
     }
   },
   methods: {
     submitForm(e) {
-      console.log(e)
       this.submitLoading = true
       let data = e.detail.value
-      
+      console.log(data)
+      debugger
       this.services.post('/applyVolunteer', data)
       .then(res => {
         this.utils.showToast('提交成功', 'success', () => uni.navigateBack(), 2500)
       })
+      .catch(res => {
+        this.submitLoading = false
+      })
     },
-    
+    getPhoneNumber(e) {
+      let detail = e.detail
+      if (!detail.iv) {
+        this.utils.jumpPage('/pages/index/index', true)
+        return
+      }
+      this.services.post('/getPhone.html', detail)
+      .then(res => {
+        this.mobile = res.phoneNumber
+      })
+    }
   }
 }
 </script>
@@ -101,6 +133,7 @@ export default {
     width: 100%;
     border-bottom: 1rpx solid #EDEDED;
     padding: 30rpx 0;
+    position: relative;
     .form-label {
       font-size: 30rpx;
       color: #333;
@@ -123,5 +156,17 @@ export default {
   color: #fff;
   margin-top: 90rpx;
   border-radius: 20rpx;
+}
+.getPhoneNumber {
+  position: absolute;
+  font-size: 24rpx;
+  color: $basic-color;
+  bottom: 14rpx;
+  left: -10rpx;
+  z-index: 2;
+  background: #fff;
+  &::after {
+    border: unset !important;
+  }
 }
 </style>
