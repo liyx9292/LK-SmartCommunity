@@ -118,7 +118,7 @@ export default {
     },
     stopPop() {},
     chooseImage() {
-      console.log(1)
+      console.log(12)
       uni.chooseImage({
         count: 1,
         success: res => {
@@ -248,6 +248,11 @@ export default {
       border-radius: 8rpx;
       box-sizing: border-box;
       padding: 30rpx;
+    }
+    .text-area {
+      width: 100%;
+      height: 150rpx;
+      overflow: hidden;
     }
     .modal-input {
       width: 100%;

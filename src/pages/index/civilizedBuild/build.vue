@@ -1,18 +1,18 @@
 <template>
   <view class="body">
-    <list>
-      <cell v-for="item in communityList" :key="item">
-        <view class="community-item" @click="jumpUnit(item)">
+    <!-- <list> -->
+      <!-- <cell v-for="item in communityList" :key="item"> -->
+        <view class="community-item" @click="jumpUnit()" v-if="buildInfo.quartersName">
           <view class="community-name">
-            社区名称
+            {{ buildInfo.quartersName }}
           </view>
           <view class="build-label">
             服务楼栋分布
           </view>
           <view class="build-container">
-            <view class="build-item" v-for="item in [1,2,3,4,5]" :key="item">
+            <view class="build-item">
               <view class="build-num">
-                01
+                {{ buildInfo.buildNumber }}
               </view>
               <view class="build-unit">
                 栋
@@ -20,21 +20,32 @@
             </view>
           </view>
         </view>
-      </cell>
-    </list>
+      <!-- </cell> -->
+    <!-- </list> -->
   </view>
 </template>
 <script>
+import { default as Constants } from '@/Utils/constants'
 export default {
   data() {
     return {
-      communityList: [1,2,3,4]
+      communityList: [],
+      buildInfo: {},
     }
   },
+  onLoad() {
+    this.getBuildList()
+  },
   methods: {
-    jumpUnit(item) {
-      console.log(1)
+    jumpUnit() {
       this.utils.jumpPage(`/pages/index/civilizedBuild/unit`)
+    },
+    getBuildList() {
+      this.services.get(`/getCivilizedList.html?pid=0`)
+      .then(res => {
+        this.buildInfo = res.BuildInfo
+        this.utils.setStorage(Constants.CIVILIZED_DATA, res)
+      })
     }
   }
 }

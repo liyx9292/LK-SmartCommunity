@@ -1,12 +1,12 @@
 <template>
   <view class="body">
-    <SearchInput />
+    <SearchInput @submitSearch="submitSearch"/>
     
     <!-- 列表 -->
     <view class="list">
       <list>
         <cell v-for="item in list" :key="item">
-          <GoodsItem />
+          <GoodsItem :goodsItem="item" goodsType="check"/>
         </cell>
       </list>
     </view>
@@ -27,8 +27,28 @@ export default {
   data() {
     return {
       pageLoading: false,
-      list: [1,1,1,1,1,1],
+      list: [],
+      searchText: '',
     }
+  },
+  onLoad() {
+    this.getGoodsList()
+  },
+  methods: {
+    getGoodsList() {
+      let params = {
+        shop_id: 7,
+        keys: this.searchText,
+      }
+      this.services.get('/getGoodsList.html', params)
+      .then(res => {
+        this.list = res
+      })
+    },
+    submitSearch(e) {
+      this.searchText = e
+      this.getGoodsList()
+    },
   }
 }
 </script>

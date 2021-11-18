@@ -1,5 +1,6 @@
 import { default as Constants } from './constants'
 import services from './services'
+import { showToast, showModal } from './toast'
 const request = services.request
 
 function getAuthorize(scope, cb, fb) {
@@ -21,10 +22,10 @@ function jumpPage(url, isRedirect) {
   // TODO: 加入判定，如果不是登录就提示登录
   let userInfo = getStorage(Constants.USER_INFO)
   let token = getStorage(Constants.TOKEN)
-  // if (!userInfo || !userInfo.nickName || !token) {
-  //   uni.navigateTo({ url: '/pages/common/auth'})
-  //   return
-  // }
+  if (!userInfo || !userInfo.nickName || !token) {
+    uni.navigateTo({ url: '/pages/common/auth'})
+    return
+  }
   jumpFn({
     url: url,
   })
@@ -50,11 +51,13 @@ async function login(userInfo, isAuth) {
   try {
     let checkRes = await checkSession()
     if (!checkRes || !loginCode) {
-      let wxCode = await wxLogin()
-      loginCode = wxCode
+      let msg = 'loginCode没有'
+      if (!checkRes) msg = 'session失效'
+      throw msg
     }
     if (!userInfo) {
-      userInfo = await getUserInfo()
+      userInfo = getStorage(Constants.USER_LOGIN_DATA)
+      if (!userInfo) throw '没有userData'
     }
     let params = {
       code: loginCode,
@@ -65,11 +68,12 @@ async function login(userInfo, isAuth) {
     }
     let getToken = await requestLogin(params)
     setStorage(Constants.TOKEN, getToken.token)
-    cleanStorage(Constants.LOGIN_CODE)
+    setStorage(Constants.USER_INFO, getToken.userinfo)
     return true
   } catch(err) {
+    console.log('--登录失败--')
+    uni.clearStorage()
     console.log(err)
-    debugger
   }
 }
 
@@ -96,10 +100,12 @@ function requestLogin(loginData) {
 function checkSession() {
   return new Promise((resolve, reject) => {
     uni.checkSession({
-      success() {
+      success(res) {
+        console.log('---session成功----')
         resolve(true)
       },
       fail() {
+        console.log('---session失败----')
         resolve(false)
       }
     })
@@ -110,7 +116,6 @@ function checkSession() {
 function getUserInfo() {
   return new Promise((resolve, reject) => {
     uni.getUserInfo({
-      provider: 'weixin',
       success(userRes) {
         setStorage(Constants.USER_INFO, userRes.userInfo)
         resolve(userRes)
@@ -144,4 +149,8 @@ export default {
   cleanStorage,
   login,
   saveHistory,
+  showToast,
+  showModal,
+  wxLogin,
+  checkSession,
 }

@@ -3,24 +3,7 @@
     <view class="logo-container">
       <image class="logo-img" src="/static/index/logo.png" />
     </view>
-    <button class="button" open-type="getUserInfo" @getuserinfo="getUserInfo">点击授权登录</button>
-    <view class="modal" v-if="isShowModal">
-      <view class="modal-block">
-        <view class="title">
-          <image class="title-icon" src="/static/index/logo.png" />
-          <view class="title-big">
-            智慧社区
-          </view>
-          <view class="title-small">
-            申请使用
-          </view>
-        </view>
-        <view class="tel-text">
-          您的手机号
-        </view>
-        <button class="button modal-button" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">一键获取手机号</button>
-      </view>
-    </view>
+    <button class="button" open-type="getUserInfo" @click="getUserProfile">点击授权登录</button>
   </view>
 </template>
 <script>
@@ -28,43 +11,31 @@ import { default as Constants } from '@/Utils/constants'
 export default {
   data() {
     return {
-      isShowModal: false,
+      loginCode: '',
     }
   },
+  onLoad() {
+    this.utils.wxLogin()
+    .then(code => {
+      this.loginCode = code
+    })
+  },
   methods: {
-    getUserInfo(res) {
-      let { userInfo } = res.detail
-      if (userInfo) {
-        this.utils.login()
-        .then(res => {
-          console.log(this)
-          debugger
-          this.isShowModal = true
-        })
-      }
-    },
-    switchShowModal() {
-      let showValue = this.isShowModal
-      this.isShowModal = !showValue
-    },
-    getPhoneNumber(e) {
-      let detail = e.detail
-      this.services.post('/getPhone.html', detail)
-      .then(res => {
-        uni.showToast({
-          title: '绑定手机号成功',
-          icon: 'success',
-          duration: 2500,
-          mask: true,
-          complete:() => {
-            setTimeout(() => {
-              this.utils.jumpPage('/pages/index/index', true)
-            }, 2500)
-          }
-        })
+    getUserProfile() {
+      uni.getUserProfile({
+        desc: '需要授权您的微信信息',
+        success: res => {
+          this.utils.setStorage(Constants.USER_LOGIN_DATA, res)
+          this.utils.login(res)
+          .then(res => {
+            this.utils.jumpPage('/pages/index/index', true)
+          })
+        },
+        fail(res) {
+          console.log(res)
+        }
       })
-      
-    }
+    },
   }
 }
 </script>
@@ -96,52 +67,6 @@ export default {
     color: #fff;
     border-color: $basic-color;
     line-height: 100rpx;
-  }
-
-  .modal {
-    background: rgba(0, 0, 0, 0.4);
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 9;
-    width: 100%;
-    height: 100vh;
-    @include flexBlock(flex-end, column);
-    .modal-block {
-      width: 100%;
-      background: #fff;
-      border-radius: 20rpx 20rpx 0 0;
-      box-sizing: border-box;
-      padding: 24rpx 30rpx 70rpx 30rpx;
-      .title {
-        @include flexBlock(flex-start, row, flex-end);
-        width: 100%;
-        .title-icon {
-          width: 50rpx;
-          height: 50rpx;
-          display: block;
-          margin-right: 15rpx;
-        }
-        .title-big {
-          font-size: 32rpx;
-          color: #333;
-          margin-right: 18rpx;
-          font-weight: 600;
-        }
-        .title-small {
-          font-size: 28rpx;
-          color: #333;
-        }
-      }
-      .tel-text {
-        font-size: 28rpx;
-        color: #333;
-        margin-top: 55rpx;
-      }
-      .modal-button {
-        margin-top: 70rpx;
-      }
-    }
   }
 }
 </style>

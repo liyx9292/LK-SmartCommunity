@@ -42,7 +42,7 @@
       </view>
     
       <!-- 志愿者证明 -->
-      <view class="prove">
+      <view class="prove" v-show="userInfo.is_volunteer === 2">
         <image class="prove-background" src="/static/user/bar_background.png"/>
         <view class="prove-container">
           <image class="prove-image" src="/static/user/user_love.png" />
@@ -93,10 +93,17 @@ export default {
     this.statusHeight = statusHeight
     let userInfo = this.utils.getStorage(Constants.USER_INFO)
     this.userInfo = userInfo
+    this.getList()
   },
   methods: {
     jumpIntQuery() {
       this.utils.jumpPage(`/pages/user/intQuery`)
+    },
+    getList() {
+      this.services.get('/getPointsList.html')
+      .then(res => {
+
+      })
     }
   }
 }

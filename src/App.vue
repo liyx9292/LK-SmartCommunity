@@ -11,8 +11,11 @@
 					this.utils.setStorage('statusBarHeight', statusHeightRpx)
 				}
 			})
-			this.utils.cleanStorage(constants.LOGIN_CODE)
 			this.utils.login()
+			uni.showShareMenu({
+				withShareTicket: true,
+				menus: ['shareAppMessage', 'shareTimeline']
+      })
 		},
 		onShow: function() {
 			console.log('App Show')

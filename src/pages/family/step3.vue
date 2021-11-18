@@ -6,12 +6,12 @@
         设置紧急联系人（选择前请核对手机号码）
       </view>
       <view class="user-container">
-        <view class="user-item" :class="{actUser: item === 1}" v-for="item in [1,2,3]" :key="item">
+        <view class="user-item" :class="{actUser: warningList.includes(index)}" v-for="(item, index) in familyMember" :key="index" @click="setSpecial(index, 'warningList')">
           <view class="user-name">
-            张三
+            {{ item.uname }}
           </view>
           <view class="user-tel">
-            12345678901
+            {{ item.mobile }}
           </view>
         </view>
       </view>
@@ -22,9 +22,9 @@
         家中是否有70岁以上需要特殊关怀的老人
       </view>
       <view class="user-container">
-        <view class="user-item special-user" :class="{actUser: item === 1}" v-for="item in [1,2,3]" :key="item">
+        <view class="user-item special-user" :class="{actUser: oldList.includes(index)}" v-for="(item, index) in familyMember" :key="index" @click="setSpecial(index, 'oldList')">
           <view class="user-name">
-            张三
+            {{ item.uname }}
           </view>
         </view>
       </view>
@@ -41,17 +41,56 @@
   </view>
 </template>
 <script>
+import { default as Constants } from '@/Utils/constants'
 export default {
-  emits: ['prevStep', 'nextStep'],
+  emits: ['prevStep', 'nextStep', 'returnIndex'],
   data() {
     return {
-
+      familyMember: [],
+      warningList: [],
+      oldList: [],
     }
+  },
+  mounted() {
+    let step2Data = this.utils.getStorage(Constants.STEP2DATA)
+    this.familyMember = step2Data.familyMember
   },
   methods: {
     prevStep() {
       this.$emit('prevStep')
     },
+    setSpecial(index, key) {
+      let arr = this[key]
+      let isIndex = arr.indexOf(index)
+      if (isIndex >= 0) {
+        arr.splice(isIndex, 1)
+      } else {
+        if (key === 'warningList' && arr.length > 0) {
+          arr.splice(0, 1)
+        }
+        arr.push(index)
+      }
+      this[key] = arr
+    },
+    nextStep() {
+      let warningList = this.warningList
+      if (warningList.length === 0) {
+        this.utils.showToast('紧急联系人为空', 'error', () => {}, 2000)
+        return
+      }
+      let step3Data = {
+        warningList: this.warningList,
+        oldList: this.oldList,
+      }
+      this.$emit('nextStep', step3Data, 'step3Data')
+      // uni.showModal({
+      //   title: '确认提交',
+      //   content: '是否提交家庭信息',
+      //   success: () => {
+      //     this.utils.showToast('填写成功', 'success', () => {this.$emit('returnIndex')}, 2000)
+      //   },
+      // })
+    }
   }
 }
 </script>

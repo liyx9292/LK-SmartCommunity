@@ -1,17 +1,17 @@
 <template>
   <view class="goods-item" @click="jumpPage">
-    <image src="" class="goods-image"/>
+    <image :src="`${url}${goodsItem.images}`" class="goods-image"/>
     <view class="goods-info">
       <view class="goods-name">
-        {{ goodsItem.name }}
+        {{ goodsItem.goods_name }}
       </view>
       <view class="goods-desc">
         <view class="goods-price">
-          <text class="num">{{ goodsItem.integral }}</text>
+          <text class="num">{{ handlePrice }}</text>
           积分
         </view>
         <view class="goods-unit">
-          12卷/提
+          {{ unitStr }}
         </view>
       </view>
       <view class="goods-button" :class="{disabledButton: goodsItem.disabled}">
@@ -21,20 +21,42 @@
   </view>
 </template>
 <script>
+import config from '@/config'
 export default {
+  data() {
+    return {
+      url: config.baseUrl,
+    }
+  },
   props: {
     goodsItem: {
       type: Object,
       default: {
-        name: '卫生纸',
+        goods_name: '卫生纸',
         integral: 20,
         disabled: true,
+        spec_type: '',
       }
+    },
+    goodsType: {
+      type: String,
+      default: 'integral'
     }
   },
   methods: {
     jumpPage() {
-      this.utils.jumpPage(`/pages/goods/goodsDetail`)
+      let id = this.goodsItem.goods_id
+      let goodsType = this.goodsType
+      this.utils.jumpPage(`/pages/goods/goodsDetail?id=${id}&goodsType=${goodsType}`)
+    }
+  },
+  computed: {
+    unitStr() {
+      return (this.goodsItem.spec_type || '').replace(/\s/g, '/')
+    },
+    handlePrice() {
+      let price = this.goodsItem.price || '0'
+      return parseFloat(price)
     }
   }
 }
