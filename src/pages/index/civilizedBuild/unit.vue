@@ -14,12 +14,12 @@
       <!-- 房间 -->
       <view class="room-list">
         <view class="room-item"
-          v-for="item in roomList"
-          :key="item"
-          @click="jumpRoom(item)"
+          v-for="(item, index) in roomList"
+          :key="item.family_id"
+          @click="jumpRoom(index)"
         >
           <view class="room-num">
-            1024
+            {{ item.houseNumber }}
           </view>
           <view class="room-unit">
             室
@@ -30,9 +30,10 @@
   </view>
 </template>
 <script>
+import { default as Constants } from '@/Utils/constants'
 const infoLabelKey = [
-  { label: '小区', keyName: 'community' },
-  { label: '楼栋', keyName: 'build' },
+  { label: '小区', keyName: 'quartersName' },
+  { label: '楼栋', keyName: 'buildStr' },
   { label: '服务人', keyName: 'manager' },
 ]
 export default {
@@ -40,15 +41,26 @@ export default {
     return {
       unitInfo: infoLabelKey,
       detail: {
-        community: '信达小区',
-        build: '02栋',
-        manager: '王王王',
+        quartersName: '',
+        buildNumber: '',
+        manager: '',
       },
-      roomList: [1,2,3,4,5,6]
+      roomList: [],
+      userInfo: null
     }
   },
+  onLoad() {
+    let buildInfo = this.utils.getStorage(Constants.CIVILIZED_DATA)
+    let userInfo = this.utils.getStorage(Constants.USER_INFO)
+    let detail = buildInfo.BuildInfo
+    detail.manager = userInfo.uname
+    this.roomList = buildInfo.list
+    this.detail = detail
+  },
   methods: {
-    jumpRoom(item) {
+    jumpRoom(index) {
+      let item = this.roomList[index]
+      this.utils.setStorage(Constants.CIVILIZED_ROOM, item)
       this.utils.jumpPage('/pages/index/civilizedBuild/room')
     }
   }

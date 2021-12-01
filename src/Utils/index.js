@@ -96,6 +96,16 @@ function requestLogin(loginData) {
   return request('/login.html', loginData, 'POST')
 }
 
+function requestUserInfo() {
+    request('/getUserInfo.html', '', 'get')
+    .then(res => {
+      setStorage(Constants.USER_INFO, res.userInfo)
+    })
+    .catch(rej => {
+      uni.cleanStorage()
+    })
+}
+
 // 检查登录状态
 function checkSession() {
   return new Promise((resolve, reject) => {
@@ -130,7 +140,7 @@ function getUserInfo() {
 
 // 保存历史记录
 function saveHistory(data, historyName = Constants.TAG_HISTORIES, maxLength = 8) {
-  let tags = this.utils.getStorage(historyName) || []
+  let tags = getStorage(historyName) || []
   let isFindIndex = tags.findIndex(item => item === data)
   if (tags.length >= maxLength && isFindIndex === -1) {
     tags.splice(tags.length - 1, 1)
@@ -139,6 +149,7 @@ function saveHistory(data, historyName = Constants.TAG_HISTORIES, maxLength = 8)
   }
   tags.unshift(data)
   setStorage(historyName, tags)
+  return tags
 }
 
 export default {
@@ -153,4 +164,5 @@ export default {
   showModal,
   wxLogin,
   checkSession,
+  requestUserInfo,
 }

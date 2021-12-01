@@ -30,9 +30,9 @@
 
         <!-- 积分信息 -->
         <view class="int-bar">
-          <view class="int-item" v-for="item in intKeys" :key="item.keyName" @click="jumpIntQuery">
+          <view class="int-item" v-for="item in intKeys" :key="item.keyName" @click="jumpIntQuery(item)">
             <view class="int-num">
-              123
+              {{ userInfo[item.keyName] || 0 }}
             </view>
             <view class="int-label">
               {{ item.label }}
@@ -82,8 +82,8 @@ export default {
       statusHeight: 0,
       intKeys: [
         { label: '拥有积分', keyName: 'hasInt' },
-        { label: '志愿者积分', keyName: 'volunteerInt' },
-        { label: '文明户积分', keyName: 'civilizedInt' },
+        { label: '志愿者积分', keyName: 'points' },
+        { label: '文明户积分', keyName: 'familyPoints' },
       ],
       userInfo: null
     }
@@ -92,12 +92,14 @@ export default {
     let statusHeight = this.utils.getStorage('statusBarHeight')
     this.statusHeight = statusHeight
     let userInfo = this.utils.getStorage(Constants.USER_INFO)
+    let familyPoints = userInfo.familyPoints || 0
+    userInfo.hasInt = parseInt(userInfo.points) + parseInt(familyPoints)
     this.userInfo = userInfo
     this.getList()
   },
   methods: {
-    jumpIntQuery() {
-      this.utils.jumpPage(`/pages/user/intQuery`)
+    jumpIntQuery(item) {
+      this.utils.jumpPage(`/pages/user/intQuery?type=${item.keyName}`)
     },
     getList() {
       this.services.get('/getPointsList.html')

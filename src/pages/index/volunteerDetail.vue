@@ -1,7 +1,7 @@
 <template>
   <view class="body">
     <SearchInput @submitSearch="submitSearch"/>
-    <ActivityCard :isDuration="detail.isDuration" :activityItem="detail"/>
+    <ActivityCard :isDuration="detail.isDuration" :activityItem="detail" :isDetail="true"/>
     <view class="activity-detail-container">
       <view class="activity-detail-bar" :class="{isDuration: detail.isDuration}">
         <template v-if="!detail.isDuration">

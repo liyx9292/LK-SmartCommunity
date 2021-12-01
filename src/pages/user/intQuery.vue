@@ -41,6 +41,25 @@ export default {
   data() {
     return {
       list: [1,2,3,4],
+      nowPage: 1,
+      allPage: 1,
+      queryType: 'points',
+    }
+  },
+  onLoad(options) {
+    let { type } = options
+    this.queryType = type
+    this.getList()
+  },
+  methods: {
+    getList(page = 1) {
+      let params = {
+        type: this.queryType === 'points' ? 'p' : 'f'
+      }
+      this.services.get('/getPointsList.html', params)
+      .then(res => {
+        this.list = res.data
+      })
     }
   }
 }

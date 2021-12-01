@@ -25,7 +25,7 @@
         </view>
         <template v-if="!isFinished">
           <view class="card-integral">
-            <text class="number">{{activityItem.need_hands}}</text>
+            <text class="number">{{activityItem.points}}</text>
             <text>分/时</text>
             <view v-if="isDuration" class="clickButton">
               点击查看
@@ -67,11 +67,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    isDetail: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     jumpDetail() {
       let id = this.activityItem.active_id || 0
       if (this.isFinished) return
+      if (this.isDetail) return
       // test
       let activityItem = this.activityItem
       activityItem.isDuration = this.isDuration
