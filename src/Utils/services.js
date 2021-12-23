@@ -33,8 +33,14 @@ function request(url, params, method = 'get') {
             duration: 2000
           })
           reject(res)
-        } 
-        else {
+        } else if ( res.statusCode === 200 && res.data && res.data.code === -200) {
+          uni.showToast({
+            title: res.data.msg,
+            icon: 'error',
+            duration: 2000
+          })
+          reject(res)
+        } else {
           reject(res)
         }
       },

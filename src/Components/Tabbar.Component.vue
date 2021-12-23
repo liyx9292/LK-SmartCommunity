@@ -44,8 +44,10 @@
         if (tab.id === 3) {
           // 扫码打卡方法
           uni.scanCode({
+            onlyFromCamera: true,
             success: res => {
-
+              let result = res.result
+              this.utils.jumpPage(`/pages/index/volunteerDetail?id=${result.oid}&nowTab=applyed&isSign=1`)
             }
           })
         } else {

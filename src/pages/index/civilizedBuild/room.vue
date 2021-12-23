@@ -166,6 +166,9 @@ export default {
         }
         params.imgs = imgUrls
         await this.services.post('/familyPoints.html', params)
+        uni.requestSubscribeMessage({
+          tmplIds: ['4CcPovkzpSlf4Zr-yrIcSI6WPbJKVd_FnicDtyqZ0l0']
+        })
         this.utils.showToast('上报成功', '', () => {
           if (this.modalType === 'decrease') {
             // 增加历史记录

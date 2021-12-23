@@ -102,7 +102,7 @@ function requestUserInfo() {
       setStorage(Constants.USER_INFO, res.userInfo)
     })
     .catch(rej => {
-      uni.cleanStorage()
+      uni.clearStorage()
     })
 }
 
