@@ -43,10 +43,10 @@
               <text class="number">15</text>
               <text>分</text>
             </view>
-            <view class="int-get-text">
+            <!-- <view class="int-get-text">
               获得
             </view>
-            <image class="item-finished-image" src="/static/index/index_apllyFinished.png"/>
+            <image class="item-finished-image" src="/static/index/index_apllyFinished.png"/> -->
           </view>
         </template>
       </view>

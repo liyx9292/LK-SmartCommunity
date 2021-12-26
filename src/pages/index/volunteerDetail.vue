@@ -1,11 +1,11 @@
 <template>
   <view class="body">
     <template v-if="detail.active_id">
-      <SearchInput @submitSearch="submitSearch" v-if="nowTab === 'applyed'"/>
-      <ActivityCard :isDuration="detail.isDuration" :activityItem="detail" :isDetail="true"/>
+      <!-- <SearchInput @submitSearch="submitSearch" v-if="nowTab === 'applyed'"/> -->
+      <ActivityCard :isDuration="detail.isDuration" :activityItem="detail" :isDetail="true" />
       <view class="activity-detail-container">
-        <view class="activity-detail-bar" :class="{isDuration: detail.isDuration}">
-          <template v-if="!detail.isDuration">
+        <view class="activity-detail-bar" :class="{isDuration: detail.is_active === 1 && nowTab === 'applyed'}">
+          <template v-if="detail.is_active !== 1 || nowTab !== 'applyed'">
             <view class="detail-item">
               <view class="detail-item-label">
                 总需(人)
@@ -45,13 +45,13 @@
                 打卡(人)
               </view>
               <view class="detail-item-num special-color">
-                12
+                {{ detail.signList.length || 0}}
               </view>
             </view>
           </template>
         </view>
       </view>
-      <template v-if="detail.is_active === 1">
+      <template v-if="detail.is_active === 1 && nowTab === 'applyed' && userInfo.is_manager === 2">
         <view class="activity-status-container">
           <view class="activity-status-bar" v-if="noArriveList.length !== 0">
             <image class="activity-status-icon" src="/static/icons/icon_noArrive.png"/>
@@ -62,12 +62,12 @@
               <cell v-for="item in noArriveList" :key="item">
                 <view class="member-bar">
                   <view class="member-name">
-                    {{item.name}}
+                    {{item.uname}}
                   </view>
                   <view class="member-phone">
-                    {{item.tel}}
+                    {{item.mobile}}
                   </view>
-                  <image class="member-image" src="/static/icons/icon_signIn.png" @click="handleSignIn(item)"/>
+                  <image class="member-image" src="/static/icons/icon_signIn.png" @click="memberSignIn(item)" v-if="userInfo.is_manager === 2"/>
                   <image class="member-image" src="/static/icons/icon_callPhone.png" @click="handlePhoneCall(item)"/>
                 </view>
               </cell>
@@ -82,12 +82,11 @@
               <cell v-for="item in arrivedList" :key="item">
                 <view class="member-bar">
                   <view class="member-name">
-                    {{item.name}}
+                    {{item.uname}}
                   </view>
                   <view class="member-phone">
-                    {{item.tel}}
+                    {{item.mobile}}
                   </view>
-                  <image class="member-image" src="/static/icons/icon_signIn.png" @click="memberSignIn(item)"/>
                   <image class="member-image" src="/static/icons/icon_callPhone.png" @click="makePhoneCall(item.mobile)" />
                 </view>
               </cell>
@@ -97,6 +96,7 @@
       </template>
       <!--  -->
       <button class="nextButton" @click="userSign" v-if="nowTab === 'applying' && detail.is_active !== 2">{{alreadySign ? '取消报名' : '立即报名'}}</button>
+      <view @click="pauseClick">暂时签到</view>
     </template>
   </view>
 </template>
@@ -119,18 +119,8 @@ export default {
         isDuration: true,
       },
       alreadySign: false,
-      noArriveList: [
-        {name: '张三', tel: '13912402301'},
-        {name: '李四', tel: '18145027492'},
-        {name: '周祥', tel: '15682947650'},
-        {name: '刘玉环', tel: '17328301265'},
-      ],
-      arrivedList: [
-        {name: '孟展鸿', tel: '13984735932'},
-        {name: '秦霄', tel: '15125938533'},
-        {name: '黄光正', tel: '13825749304'},
-        {name: '郭子良', tel: '17725748593'},
-      ],
+      noArriveList: [],
+      arrivedList: [],
     }
   },
   onLoad(e) {
@@ -181,9 +171,22 @@ export default {
       this.services.post('/getActInfo.html', params)
       .then(res => {
         let userList = res.userList
-        let alreadySign = userList.find(user => user.user_id === this.userInfo.user_id)
+        let alreadySign = false;
+        let arrivedList = []
+        let noArriveList = []
+        userList.forEach(user => {
+          if (user.user_id === this.userInfo.user_id) alreadySign = true
+          if (res.signList.includes(user.user_id)) {
+            arrivedList.push(user)
+          } else {
+            noArriveList.push(user)
+          }
+        })
+
         this.detail = res
         this.alreadySign = alreadySign ? true : false
+        this.arrivedList = arrivedList
+        this.noArriveList = noArriveList
       })
     },
     submitSearch(e) {
@@ -227,6 +230,17 @@ export default {
         let msg = this.alreadySign ? '取消成功' : '报名成功'
         this.alreadySign = !this.alreadySign
         this.utils.showToast(msg, 'success', '', 2500)
+        this.getDetail()
+      })
+    },
+    pauseClick() {
+      let params = {
+        active_id: this.detail.active_id,
+        orderType: 0,
+      }
+      this.services.post('/signOrder.html', params)
+      .then(res => {
+        this.utils.showToast('签到成功', 'success', '', 2500)
         this.getDetail()
       })
     }
@@ -299,6 +313,7 @@ export default {
     width: 100%;
     padding: 17rpx 30rpx;
     background: #fff;
+    box-sizing: border-box;
   }
   .member-bar {
     width: 100%;

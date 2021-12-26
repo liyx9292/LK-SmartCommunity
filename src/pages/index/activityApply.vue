@@ -58,10 +58,10 @@
         </list>
       </view>
       <!-- 已结束列表 -->
-      <view class="activity-status-container">
+      <view class="activity-status-container" v-if="finishList.length > 0">
         <view class="activity-status-bar">
           <image class="activity-status-icon" src="/static/icons/icon_timeFinished.png"/>
-          已完成
+          已结束
         </view>
         <list class="list">
           <cell v-for="item in finishList" :key="item.active_id">
