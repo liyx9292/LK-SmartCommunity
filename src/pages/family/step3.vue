@@ -83,13 +83,6 @@ export default {
         oldList: this.oldList,
       }
       this.$emit('nextStep', step3Data, 'step3Data')
-      // uni.showModal({
-      //   title: '确认提交',
-      //   content: '是否提交家庭信息',
-      //   success: () => {
-      //     this.utils.showToast('填写成功', 'success', () => {this.$emit('returnIndex')}, 2000)
-      //   },
-      // })
     }
   }
 }

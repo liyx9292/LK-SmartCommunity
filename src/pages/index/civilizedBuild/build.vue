@@ -43,6 +43,7 @@ export default {
     getBuildList() {
       this.services.get(`/getCivilizedList.html?pid=0`)
       .then(res => {
+        res.BuildInfo.buildStr = `${res.BuildInfo.buildNumber}栋`
         this.buildInfo = res.BuildInfo
         this.utils.setStorage(Constants.CIVILIZED_DATA, res)
       })

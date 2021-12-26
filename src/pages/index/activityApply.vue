@@ -29,7 +29,7 @@
       <!-- 列表 -->
       <list class="list">
         <cell v-for="item in applyingList" :key="item.active_id">
-          <ActivityCard :activityItem="item"/>
+          <ActivityCard :activityItem="item" :nowTab="nowTab"/>
         </cell>
       </list>
     </template>
@@ -53,18 +53,18 @@
         </view>
         <list class="list">
           <cell v-for="item in joinedList" :key="item.active_id">
-            <ActivityCard :isDuration="true" :activityItem="item"/>
+            <ActivityCard :isDuration="true" :activityItem="item" :nowTab="nowTab"/>
           </cell>
         </list>
       </view>
       <!-- 已结束列表 -->
-      <view class="activity-status-container">
+      <view class="activity-status-container" v-if="finishList.length > 0">
         <view class="activity-status-bar">
           <image class="activity-status-icon" src="/static/icons/icon_timeFinished.png"/>
-          已完成
+          已结束
         </view>
         <list class="list">
-          <cell v-for="item in joinedList" :key="item.active_id">
+          <cell v-for="item in finishList" :key="item.active_id">
             <ActivityCard :isFinished="true" :activityItem="item"/>
           </cell>
         </list>
@@ -90,8 +90,11 @@ export default {
       firstSearchText: '',
       applyingList: [],
       applyingPage: 1,
+      applyingTotal: 1,
       joinedList: [],
+      finishList: [],
       joinedPage: 1,
+      joinedTotal: 1,
       isFocusSearch: false, // 是否先是搜索栏字体
     }
   },
@@ -107,7 +110,8 @@ export default {
         fn && fn()
       })
     },
-    getActivity(page = 1, keys = '') {
+    getActivity(page = 1, keys = '', isFresh = false) {
+      if (this.applyingTotal < page) return
       let params = {
         page: page,
         keys: keys,
@@ -117,10 +121,12 @@ export default {
       this.services.get('/getActives.html', params)
       .then(res => {
         this.applyingPage = res.current_page
-        this.applyingList = res.data
+        this.applyingList = isFresh || page === 1 ? res.data : [...this.applyingList, ...res.data]
+        this.applyingTotal = Math.ceil(res.total / res.per_page)
       })
     },
-    getJoinedActivity(page = 1, keys = '') {
+    getJoinedActivity(page = 1, keys = '', isFresh = false) {
+      if (this.joinedTotal < page) return
       let params = {
         page: page,
         keys: keys,
@@ -130,11 +136,23 @@ export default {
       this.services.get('/getJoinActives.html', params)
       .then(res => {
         this.joinedPage = res.current_page
-        this.joinedList = res.data
+        let finishList = []
+        let duringList = []
+        res.data.forEach(item => {
+          if (item.is_active === 2) {
+            finishList.push(item)
+          } else {
+            duringList.push(item)
+          }
+        })
+        this.joinedList = isFresh || page === 1 ? duringList : [...this.joinedList, ...duringList]
+        this.finishList = isFresh || page === 1 ? finishList : [...this.finishList, ...finishList]
+        this.joinedTotal = Math.ceil(res.total / res.per_page)
       })
     },
     switchTab(value) {
       if (value === this.nowTab || this.pageLoading) return
+      this.nowPage = 1
       this.nowTab = value
     },
     focusSearch() {
@@ -173,7 +191,7 @@ export default {
     clickTag(item) {
       // this.submitSearch({detail: {value: itemText}})
       this.nowCateId = item.cate_id
-      this.getActivity()
+      this.getActivity(1, '', true)
     }
   },
   watch: {

@@ -71,8 +71,6 @@ export default {
     submitForm(e) {
       this.submitLoading = true
       let data = e.detail.value
-      console.log(data)
-      debugger
       this.services.post('/applyVolunteer', data)
       .then(res => {
         this.utils.showToast('提交成功', 'success', () => uni.navigateBack(), 2500)

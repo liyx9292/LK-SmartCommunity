@@ -29,6 +29,20 @@
       <view class="step-input-container">
         <input class="step-input" placeholder="请输入手机号码" v-model="inputTel" maxlength="11" type="number"/>
       </view>
+      <view class="step-label">
+        是否接种疫苗
+      </view>
+      <view class="sex-container">
+        <view class="sex-item yimiao-item" :class="{actSex: inputYimiao === item.value}" v-for="item in yimiaoProgress" :key="item.value" @click="switchGender(item.value, 'inputYimiao')">
+          <view>{{item.label}}</view>
+        </view>
+      </view>
+      <view class="step-label">
+        接种疫苗备注
+      </view>
+      <view class="step-input-container">
+        <input class="step-input" placeholder="请输入疫苗备注" v-model="inputYimiaoDesc" maxlength="20"/>
+      </view>
 
       <!-- 添加家庭成员列表 -->
       <view class="family-container">
@@ -85,6 +99,20 @@
       <view class="step-input-container">
         <input class="step-input" placeholder="请输入身份证号" v-model="modalInputId" type="idcard" maxlength="18"/>
       </view>
+      <view class="step-label">
+        是否接种疫苗
+      </view>
+      <view class="sex-container">
+        <view class="sex-item yimiao-item" :class="{actSex: modalInputYimiao === item.value}" v-for="item in yimiaoProgress" :key="item.value" @click="switchGender(item.value, 'modalInputYimiao')">
+          <view>{{item.label}}</view>
+        </view>
+      </view>
+      <view class="step-label">
+        接种疫苗备注
+      </view>
+      <view class="step-input-container">
+        <input class="step-input" placeholder="请输入疫苗备注" v-model="modalInputYimiaoDesc" maxlength="20"/>
+      </view>
       <button class="modal-button" @click="confirmAddUser">添加成员</button>
     </view>
 
@@ -105,6 +133,8 @@ const modalDataKey = {
   modalInputGender: { myKey: 'sex', label: '性别' },
   modalInputTel: { myKey: 'mobile', label: '电话号码' },
   modalInputId: { myKey: 'idCardNo', label: '身份证号' },
+  modalInputYimiao: { myKey: 'is_vacc', label: '接种疫苗' },
+  modalInputYimiaoDesc: { myKey: 'vacc_times', label: '接种备注' },
 }
 let buttonHeight = 0
 export default {
@@ -116,10 +146,16 @@ export default {
         { label: '男性', icon: '/static/family/family_male.png', value: '1' },
         { label: '女性', icon: '/static/family/family_female.png', value: '2' },
       ],
+      yimiaoProgress: [
+        { label: '已接种', value: 1 },
+        { label: '未接种', value: 0 },
+      ],
       inputName: '',
       inputGender: '',
       inputTel: '',
       inputId: '',
+      inputYimiao: '',
+      inputYimiaoDesc: '',
       nowSex: '1',
       showModal: false,
       familyMember: [],
@@ -127,6 +163,8 @@ export default {
       modalInputGender: '',
       modalInputTel: '',
       modalInputId: '',
+      modalInputYimiao: '',
+      modalInputYimiaoDesc: '',
     }
   },
   mounted() {
@@ -153,6 +191,8 @@ export default {
     },
     nextStep() {
       let ownerData = this.inputRealData
+      console.log(ownerData)
+      debugger
       let result = this.validateUser(ownerData)
       if (!result.isPass) {
         if (result.errMsg) {
@@ -225,7 +265,7 @@ export default {
             }
           default:
             let value = data[keyName]
-            if (!value) {
+            if (!value && value !== 0) {
               isPass = false
               errMsg = `${pretext}${label}不能空`
             }
@@ -316,6 +356,9 @@ export default {
         display: block;
         margin-right: 20rpx;
       }
+    }
+    .yimiao-item {
+      justify-content: center;
     }
     .actSex {
       border-color: $basic-color;

@@ -11,7 +11,7 @@
 					this.utils.setStorage('statusBarHeight', statusHeightRpx)
 				}
 			})
-			this.utils.login()
+			this.utils.requestUserInfo()
 			uni.showShareMenu({
 				withShareTicket: true,
 				menus: ['shareAppMessage', 'shareTimeline']

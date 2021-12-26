@@ -29,7 +29,7 @@
 
     </view>
 
-    <button class="button" @click="submit">{{ pageType === 'integral' ? '立即兑换' : '点击核销' }}</button>
+    <button class="button" :class="{ disbaledButton: goodsDetail.stock_nums === 0 }" @click="submit">{{ goodsDetail.stock_nums === 0 ? '库存不足' : pageType === 'integral' ? '立即兑换' : '点击核销' }}</button>
     
   </view>
 </template>
@@ -65,6 +65,7 @@ export default {
       })
     },
     submit() {
+      if (this.goodsDetail.stock_nums === 0) return
       if (this.pageType === 'integral') {
         this.duihuan()
       } else {
@@ -76,17 +77,17 @@ export default {
         title: '确定兑换',
         content: '是否兑换这个商品',
         success: () => {
-          this.utils.showToast('兑换成功', 'success', '', 2500)
-          return
+          // return
           let params = {
             goods_id: this.id,
             goods_num: 1,
           }
           this.services.post('/orders.html', params)
           .then(res => {
-            uni.showToast({
-              title: '兑换成功',
-            })
+            this.utils.showToast('兑换成功', 'success', '', 2500)
+          })
+          .catch(rej => {
+            this.utils.showToast(rej.data.msg, 'error', '', 2500)
           })
         },
       })
@@ -169,5 +170,9 @@ export default {
   position: fixed;
   bottom: 50rpx;
   left: 30rpx
+}
+.disbaledButton {
+  color: #fff;
+  background: #CCCCCC;
 }
 </style>

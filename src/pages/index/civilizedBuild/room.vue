@@ -32,56 +32,60 @@
 
     <!-- 加分弹框 -->
     <view class="modal" v-if="modalType === 'increase'" @click="closeModal">
-      <view class="modal-block" @click.stop="stopPop">
-        <image class="close-modal" src=""/>
-        <view class="modal-title">
-          加分情况
+      <form report-submit @submit="submitForm">
+        <view class="modal-block" @click.stop="stopPop">
+          <image class="close-modal" src=""/>
+          <view class="modal-title">
+            加分情况
+          </view>
+          <view class="input-container">
+            <input class="modal-input" placeholder="请输入分数" v-model="points" name="points" type="number"/>
+          </view>
+          <button class="modal-button" form-type="submit">上报</button>
         </view>
-        <view class="input-container">
-          <input class="modal-input" placeholder="请输入分数"/>
-        </view>
-        <button class="modal-button">上报</button>
-      </view>
+      </form>
     </view>
     <!-- 减分弹框 -->
     <view class="modal decrease-modal" v-if="modalType === 'decrease'" @click="closeModal">
-      <view class="modal-block decrease-block" @click.stop="stopPop">
-        <image class="close-modal" src=""/>
-        <view class="input-container">
-          <input class="modal-input" placeholder="请输入所扣分数"/>
-        </view>
-        <view class="input-label">
-          请输入减分理由
-        </view>
-        <view class="input-container text-area">
-          <textarea placeholder="请输入减分理由" v-model="reason"/>
-        </view>
-        <view class="reason-block">
-          <view class="reason-item" v-for="(item, index) in reasonList" :key="index">
-            {{ item }}
+      <form report-submit @submit="submitForm">
+        <view class="modal-block decrease-block" @click.stop="stopPop">
+          <image class="close-modal" src=""/>
+          <view class="input-container">
+            <input class="modal-input" placeholder="请输入所扣分数" name="points" v-model="points" type="number"/>
           </view>
-        </view>
-        <!-- 上传图片 -->
-        <view class="image-container">
-          <view class="image-item" v-for="(item, index) in imageUpload" :key="index">
-            <image class="image-item-img" :src="item"/>
+          <view class="input-label">
+            请输入减分理由
           </view>
-          <view class="image-item upload-image" v-if="imageUpload.length < 3">
-            <image class="upload-image-img" src="/static/index/upload_image.png" @click="chooseImage"/>
+          <view class="input-container text-area">
+            <textarea placeholder="请输入减分理由" v-model="reason" name="reason" maxlength="200"/>
           </view>
+          <view class="reason-block">
+            <view class="reason-item" v-for="(item, index) in reasonList" :key="index" @click="selectReason(item)">
+              {{ item }}
+            </view>
+          </view>
+          <!-- 上传图片 -->
+          <view class="image-container">
+            <view class="image-item" v-for="(item, index) in imageUpload" :key="index">
+              <image class="image-item-img" :src="item" @click="changeImg(index)"/>
+            </view>
+            <view class="image-item upload-image" v-if="imageUpload.length < 3">
+              <image class="upload-image-img" src="/static/index/upload_image.png" @click="chooseImage"/>
+            </view>
+          </view>
+          <button class="modal-button" form-type="submit">上报</button>
         </view>
-        <button class="modal-button" @click="sendReason">上报</button>
-      </view>
+      </form>
     </view>
   </view>
 </template>
 <script>
 // TODO: 加分弹窗 只有分数 没有理由
 // TODO: 减分弹窗 理由标签从哪里获取, 图片最多几张
-import { Constants } from '@/Utils/constants'
+import { default as Constants } from '@/Utils/constants'
 const infoLabelKey = [
-  { label: '小区', keyName: 'community' },
-  { label: '楼栋', keyName: 'build' },
+  { label: '小区', keyName: 'quartersName' },
+  { label: '楼栋', keyName: 'buildStr' },
   { label: '服务人', keyName: 'manager' },
   { label: '房间', keyName: 'room' }
 ]
@@ -90,12 +94,11 @@ export default {
     return {
       unitInfo: infoLabelKey,
       detail: {
-        community: '信达小区',
-        build: '02栋',
+        quartersName: '信达小区',
+        buildStr: '',
         manager: '王王王',
-        room: '102'
+        roomNumber: '102'
       },
-      roomList: [1,2,3,4,5,6],
       modalType: '',
       modalDetail: {
         int: null,
@@ -104,7 +107,20 @@ export default {
       imageUpload: [],
       reasonList: [],
       reason: '',
+      points: '',
     }
+  },
+  onLoad() {
+    let roomData = this.utils.getStorage(Constants.CIVILIZED_ROOM)
+    let buildInfo = this.utils.getStorage(Constants.CIVILIZED_DATA)
+    let userInfo = this.utils.getStorage(Constants.USER_INFO)
+    let detail = buildInfo.BuildInfo
+    let history = this.utils.getStorage(Constants.REASON_HISTORIES)
+    this.reasonList = history
+    detail.manager = userInfo.uname
+    detail.room = roomData.houseNumber
+    this.detail = detail
+
   },
   methods: {
     showModal(type = 'increase') {
@@ -117,6 +133,9 @@ export default {
       this.imageUpload = []
     },
     stopPop() {},
+    selectReason(item) {
+      this.reason = item
+    },
     chooseImage() {
       console.log(12)
       uni.chooseImage({
@@ -127,8 +146,66 @@ export default {
         }
       })
     },
-    sendReason() {
-      let reason = this.reason
+    changeImg(index) {
+
+    },
+    async submitForm(e) {
+      let { value, formId } = e.detail
+      let imageUpload = this.imageUpload
+      let imgUrls = []
+      let params = {
+        ...value,
+        type: this.modalType === 'increase' ? 10 : 20,
+        family_id: this.detail.family_id,
+      }
+      try {
+        this.validateParams(params)
+        if (imageUpload.length > 0) {
+          let uploadRes = await this.uploadImgs(imageUpload)
+          imgUrls = uploadRes.map(item => item.url)
+        }
+        params.imgs = imgUrls
+        await this.services.post('/familyPoints.html', params)
+        uni.requestSubscribeMessage({
+          tmplIds: ['4CcPovkzpSlf4Zr-yrIcSI6WPbJKVd_FnicDtyqZ0l0']
+        })
+        this.utils.showToast('上报成功', '', () => {
+          if (this.modalType === 'decrease') {
+            // 增加历史记录
+            let newHistory = this.utils.saveHistory(params.reason, Constants.REASON_HISTORIES, 8)
+            this.reasonList = newHistory
+          }
+          this.modalType = ''
+          this.resetForm()
+        }, 2500)
+      } catch(err) {
+        if (err.type === 'isValid') {
+          this.utils.showToast(err.msg, 'error')
+        }
+      }
+    },
+    resetForm() {
+      this.imageUpload = []
+      this.reason = ''
+      this.points = null
+    },
+    validateParams(params) {
+      if (!params.points) {
+        throw { type: 'isValid', msg: '分数不能为空' }
+      }
+      if (params.points <= 0) {
+        throw { type: 'isValid', msg: '分数要大于0' }
+      }
+      if (params.type === 20 && !params.reason) {
+        throw { type: 'isValid', msg: '理由不能为空' }
+      }
+    },
+    uploadImgs(imgs) {
+      return Promise.all(
+        imgs.map(path => {
+          return this.services.uploadImg(path)
+        })
+      )
     }
   }
 }
@@ -294,6 +371,10 @@ export default {
         border-radius: 20rpx;
         display: inline-block;
         color: #fff;
+        max-width: 150rpx;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
     .image-container {

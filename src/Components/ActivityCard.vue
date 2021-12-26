@@ -10,13 +10,18 @@
       </view>
       <view class="card-info">
         <view class="card-desc">
-          <view class="desc-bar">
+          <view class="desc-bar" v-if="!isDetail">
             <image class="desc-icon" src="/static/icons/icon_users.png" />
             <text>{{activityItem.need_hands}}人</text>
           </view>
+          <view class="desc-bar" v-else>
+            <image class="desc-icon" src="/static/icons/icon_location.png" />
+            <text>{{activityItem.active_location}}</text>
+          </view>
+        
           <view class="desc-bar">
             <image class="desc-icon" src="/static/icons/icon_time.png" />
-            <text>08:00至17:00</text>
+            <text>{{durationTime}}</text>
           </view>
           <view class="desc-bar">
             <image class="desc-icon" src="/static/icons/icon_date.png" />
@@ -25,7 +30,7 @@
         </view>
         <template v-if="!isFinished">
           <view class="card-integral">
-            <text class="number">{{activityItem.need_hands}}</text>
+            <text class="number">{{activityItem.points}}</text>
             <text>分/时</text>
             <view v-if="isDuration" class="clickButton">
               点击查看
@@ -38,10 +43,10 @@
               <text class="number">15</text>
               <text>分</text>
             </view>
-            <view class="int-get-text">
+            <!-- <view class="int-get-text">
               获得
             </view>
-            <image class="item-finished-image" src="/static/index/index_apllyFinished.png"/>
+            <image class="item-finished-image" src="/static/index/index_apllyFinished.png"/> -->
           </view>
         </template>
       </view>
@@ -67,17 +72,26 @@ export default {
       type: Boolean,
       default: false,
     },
+    isDetail: {
+      type: Boolean,
+      default: false,
+    },
+    nowTab: {
+      type: String,
+      default: 'applying',
+    }
   },
   methods: {
     jumpDetail() {
       let id = this.activityItem.active_id || 0
+      let nowTab = this.nowTab
       if (this.isFinished) return
+      if (this.isDetail) return
       // test
       let activityItem = this.activityItem
       activityItem.isDuration = this.isDuration
-      this.utils.setStorage('activeDetail', activityItem)
       // test
-      this.utils.jumpPage(`/pages/index/volunteerDetail?id=${id}`)
+      this.utils.jumpPage(`/pages/index/volunteerDetail?id=${id}&nowTab=${nowTab}`)
     }
   },
   computed: {
@@ -95,6 +109,12 @@ export default {
         let day = time.slice(8, 10)
         return `${year}年${month}月${day}日`
       }
+    },
+    durationTime() {
+      let startTime = (this.activityItem.start_time || '').substr(11, 5)
+      let endTime = (this.activityItem.end_time || '').substr(11, 5)
+      console.log(startTime)
+      return `${startTime}至${endTime}`
     }
   }
 }

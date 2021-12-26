@@ -14,8 +14,8 @@
           {{ unitStr }}
         </view>
       </view>
-      <view class="goods-button" :class="{disabledButton: goodsItem.disabled}">
-        {{ goodsItem.disabled ? '兑换结束' : '立即兑换'}}
+      <view class="goods-button" :class="{disabledButton: goodsItem.disabled || goodsItem.stock_nums === 0}">
+        {{ goodsItem.stock_nums === 0 ? '库存不足' : goodsItem.disabled ? '兑换结束' : '立即兑换'}}
       </view>
     </view>
   </view>
@@ -45,7 +45,9 @@ export default {
   },
   methods: {
     jumpPage() {
-      let id = this.goodsItem.goods_id
+      let goodsItem = this.goodsItem
+      if (goodsItem.stock_nums === 0 || goodsItem.disabled) return
+      let id = goodsItem.goods_id
       let goodsType = this.goodsType
       this.utils.jumpPage(`/pages/goods/goodsDetail?id=${id}&goodsType=${goodsType}`)
     }

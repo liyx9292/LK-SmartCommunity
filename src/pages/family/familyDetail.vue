@@ -89,8 +89,6 @@ export default {
           ...warningUser,
           info: familyMember
         }
-        console.log(params)
-        debugger
         this.services.post('/familyAdd.html', params)
         .then(res => {
           console.log(res)
