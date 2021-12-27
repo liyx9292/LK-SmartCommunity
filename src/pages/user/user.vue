@@ -99,6 +99,10 @@ export default {
   },
   methods: {
     jumpIntQuery(item) {
+      if (item.keyName === 'familyPoints') {
+        this.utils.showModal('提示', '该功能未开放')
+        return
+      }
       this.utils.jumpPage(`/pages/user/intQuery?type=${item.keyName}`)
     },
     getList() {

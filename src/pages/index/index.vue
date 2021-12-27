@@ -102,12 +102,7 @@
 					{ id: 4, label: '文明户管理', path: '/pages/index/civilizedBuild/build' },
 				],
 				tips: [],
-				newsList: [
-					{isTop: true, images: [1,2,3], time: '2019-09-20', title: 'asdasdad'},
-					{isTop: true, images: [1], time: '2019-09-20', title: 'asdasdad'},
-					{isTop: false, images: [1,2,3], time: '2019-09-20', title: 'asdasdad'},
-					{isTop: false, images: [1], time: '2019-09-20', title: 'asdasdad'},
-				],
+				newsList: [],
 			}
 		},
 		onLoad() {
@@ -126,6 +121,9 @@
 						this.utils.showModal('审核中', '请等待审核结果', false)
 						return
 					}
+				} else if (item.id === 4) {
+					this.utils.showModal('提示', '该功能未开放')
+					return
 				}
 				this.utils.jumpPage(item.path)
 			},

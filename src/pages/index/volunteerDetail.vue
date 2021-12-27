@@ -96,7 +96,7 @@
       </template>
       <!--  -->
       <button class="nextButton" @click="userSign" v-if="nowTab === 'applying' && detail.is_active !== 2">{{alreadySign ? '取消报名' : '立即报名'}}</button>
-      <view @click="pauseClick">暂时签到</view>
+      <!-- <view @click="pauseClick">暂时签到</view> -->
     </template>
   </view>
 </template>
@@ -131,17 +131,19 @@ export default {
       let arrPara = scene.split("&");
       let sceneParams = {}
       for (let i in arrPara) {
-        let dataArr = arrPara[i].split("=");	// 拆分参数的名称和值
+        let dataArr = arrPara[i].split(":");	// 拆分参数的名称和值
         sceneParams[dataArr[0]] = dataArr[1]
       }
       if (Object.keys(sceneParams).length > 0) {
+        this.id = sceneParams.oid
         let params = {
-          active_id: e.id,
+          active_id: sceneParams.oid,
           orderType: 0,
         }
         this.services.post('/signOrder.html', params)
         .then(res => {
           this.utils.showToast('签到成功', 'success', '', 2500)
+          this.nowTab = 'applyed'
           this.getDetail()
         })
       }

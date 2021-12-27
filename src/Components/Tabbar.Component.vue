@@ -50,6 +50,8 @@
               this.utils.jumpPage(`/pages/index/volunteerDetail?id=${result.oid}&nowTab=applyed&isSign=1`)
             }
           })
+        } else if ([2].includes(tab.id)) {
+          this.utils.showModal('提示', '该功能未开放')
         } else {
           if (tab.path === this.nowPath) return
           this.utils.jumpPage(tab.path, true)

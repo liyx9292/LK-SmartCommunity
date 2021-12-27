@@ -40,7 +40,7 @@
 export default {
   data() {
     return {
-      list: [1,2,3,4],
+      list: [],
       nowPage: 1,
       allPage: 1,
       queryType: 'points',
@@ -56,9 +56,12 @@ export default {
       let params = {
         type: this.queryType === 'points' ? 'p' : 'f'
       }
+      if (page > this.allPage) return
       this.services.get('/getPointsList.html', params)
       .then(res => {
         this.list = res.data
+        this.nowPage = page
+        this.allPage = Math.ceil(res.total / res.per_page)
       })
     }
   }

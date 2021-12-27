@@ -46,35 +46,42 @@ function cleanStorage(name) {
 }
 
 // 登录
-async function login(userInfo, isAuth) {
+function login(userInfo, isAuth) {
   let loginCode = getStorage(Constants.LOGIN_CODE)
-  try {
-    let checkRes = await checkSession()
-    if (!checkRes || !loginCode) {
-      let msg = 'loginCode没有'
-      if (!checkRes) msg = 'session失效'
-      throw msg
+  return new Promise(async (resolve, reject) => {
+    try {
+      let checkRes = await checkSession()
+      if (!checkRes || !loginCode) {
+        let msg = 'loginCode没有'
+        if (!checkRes) msg = 'session失效'
+        throw msg
+      }
+      if (!userInfo) {
+        userInfo = getStorage(Constants.USER_LOGIN_DATA)
+        if (!userInfo) throw '没有userData'
+      }
+      let params = {
+        code: loginCode,
+        encrypted_data: userInfo.encryptedData,
+        user_info: userInfo.rawData,
+        iv: userInfo.iv,
+        signature: userInfo.signature,
+      }
+      let getToken = await requestLogin(params)
+      setStorage(Constants.TOKEN, getToken.token)
+      setStorage(Constants.USER_INFO, getToken.userinfo)
+      resolve(true)
+    } catch(err) {
+      console.log('--登录失败--')
+      uni.clearStorage()
+      uni.showModal({
+        title: '登录失败',
+        showCancel: false,
+        content: JSON.stringify(err.data)
+      })
+      reject(err)
     }
-    if (!userInfo) {
-      userInfo = getStorage(Constants.USER_LOGIN_DATA)
-      if (!userInfo) throw '没有userData'
-    }
-    let params = {
-      code: loginCode,
-      encrypted_data: userInfo.encryptedData,
-      user_info: userInfo.rawData,
-      iv: userInfo.iv,
-      signature: userInfo.signature,
-    }
-    let getToken = await requestLogin(params)
-    setStorage(Constants.TOKEN, getToken.token)
-    setStorage(Constants.USER_INFO, getToken.userinfo)
-    return true
-  } catch(err) {
-    console.log('--登录失败--')
-    uni.clearStorage()
-    console.log(err)
-  }
+  })
 }
 
 function wxLogin() {
@@ -103,6 +110,23 @@ function requestUserInfo() {
     })
     .catch(rej => {
       uni.clearStorage()
+      uni.showModal({
+        title: '需要登录',
+        showCancel: true,
+        content: '请登录后再使用',
+        cancelText: '返回',
+        success: (res) => {
+          let url = ''
+          if (res.confirm) {
+            url = '/pages/common/auth';
+          } else {
+            url = '/pages/index/index'
+          }
+          uni.redirectTo({
+            url: url
+          })
+        },
+      })
     })
 }
 

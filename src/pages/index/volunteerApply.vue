@@ -71,9 +71,16 @@ export default {
     submitForm(e) {
       this.submitLoading = true
       let data = e.detail.value
+      let validResult = this.validateData(data)
+      if (!validResult.isValid) {
+        this.utils.showModal('错误', validResult.msg)
+        this.submitLoading = false
+        return
+      }
       this.services.post('/applyVolunteer', data)
       .then(res => {
         this.utils.showToast('提交成功', 'success', () => uni.navigateBack(), 2500)
+        this.submitLoading = false
       })
       .catch(res => {
         this.submitLoading = false
@@ -89,6 +96,16 @@ export default {
       .then(res => {
         this.mobile = res.phoneNumber
       })
+    },
+    validateData(data) {
+      let result = { isValid: true }
+      Object.keys(data).forEach(key => {
+        if (!data[key]) {
+          result.isValid = false
+          result.msg = '请输入完整'
+        }
+      })
+      return result
     }
   }
 }
