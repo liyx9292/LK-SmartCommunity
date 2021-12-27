@@ -46,8 +46,7 @@
           uni.scanCode({
             onlyFromCamera: true,
             success: res => {
-              let result = res.result
-              this.utils.jumpPage(`/pages/index/volunteerDetail?id=${result.oid}&nowTab=applyed&isSign=1`)
+              this.utils.jumpPage(`/${res.path}`)
             }
           })
         } else if ([2].includes(tab.id)) {
