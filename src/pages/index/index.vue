@@ -80,6 +80,7 @@
 			</cell>
 		</list>
 		<Tabbar/>
+		<!-- <view @click="test">test</view> -->
 	</view>
 </template>
 
@@ -107,10 +108,29 @@
 		},
 		onLoad() {
 			let statusHeight = this.utils.getStorage('statusBarHeight')
-    	this.statusHeight = statusHeight
+			this.statusHeight = statusHeight
 			this.getNews()
 		},
 		methods: {
+			test() {
+				console.log(2)
+				wx.getSetting({
+					withSubscriptions: true,
+					success (res) {
+						console.log(res.authSetting)
+					
+						console.log(res.subscriptionsSetting)
+						
+					}
+				})
+
+				// uni.requestSubscribeMessage({
+				// 	tmplIds: ['4CcPovkzpSlf4Zr-yrIcSI6WPbJKVd_FnicDtyqZ0l0'],
+				// 	success: () => {
+
+				// 	}
+				// })
+			},
 			jumpPage(item) {
 				if (item.id === 1) {
 					let userInfo = this.utils.getStorage(Constants.USER_INFO)
@@ -121,9 +141,18 @@
 						this.utils.showModal('审核中', '请等待审核结果', false)
 						return
 					}
-				} else if (item.id === 4) {
-					this.utils.showModal('提示', '该功能未开放')
-					return
+				// } else if (item.id === 4) {
+				// 	this.utils.showModal('提示', '该功能未开放')
+				// 	return
+				}
+				let hasSubscribe = this.utils.getStorage(Constants.HAS_SUBSCRIBE)
+				if (!hasSubscribe) {
+					wx.requestSubscribeMessage({
+						tmplIds: ['4CcPovkzpSlf4Zr-yrIcSI6WPbJKVd_FnicDtyqZ0l0'],
+						success: () => {
+							this.utils.setStorage(Constants.HAS_SUBSCRIBE, true)
+						}
+					})
 				}
 				this.utils.jumpPage(item.path)
 			},
@@ -200,6 +229,9 @@
 			color: #333333;
 			margin-top: 5rpx;
 		}
+	}
+	.cantUse {
+		filter:grayscale(100%);
 	}
 }
 

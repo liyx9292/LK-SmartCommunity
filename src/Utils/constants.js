@@ -1,6 +1,7 @@
 let constants = {
   LOGIN_DATA: 'loginData',
   LOGIN_CODE: 'loginCode',
+  HAS_SUBSCRIBE: 'hasSubscribe',
   USER_INFO: 'userInfo',
   USER_LOGIN_DATA: 'userLoginData',
   TOKEN: 'token',

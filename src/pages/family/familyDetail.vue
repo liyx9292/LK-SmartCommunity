@@ -91,8 +91,9 @@ export default {
         }
         this.services.post('/familyAdd.html', params)
         .then(res => {
-          console.log(res)
-          debugger
+          this.utils.showToast('提交成功', 'sucess', () => {
+
+          })
         })
       } else {
         this.nowStep = nowStepNum + 1

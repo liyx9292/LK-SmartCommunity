@@ -116,13 +116,13 @@ export default {
         page: page,
         keys: keys,
         cate_id: this.nowCateId,
-        pageSize: 20,
+        pageSize: 10,
       }
       this.services.get('/getActives.html', params)
       .then(res => {
         this.applyingPage = res.current_page
         this.applyingList = isFresh || page === 1 ? res.data : [...this.applyingList, ...res.data]
-        this.applyingTotal = Math.ceil(res.total / res.per_page)
+        this.applyingTotal = Math.ceil(res.total / res.per_page) || 1
       })
     },
     getJoinedActivity(page = 1, keys = '', isFresh = false) {
@@ -147,7 +147,7 @@ export default {
         })
         this.joinedList = isFresh || page === 1 ? duringList : [...this.joinedList, ...duringList]
         this.finishList = isFresh || page === 1 ? finishList : [...this.finishList, ...finishList]
-        this.joinedTotal = Math.ceil(res.total / res.per_page)
+        this.joinedTotal = Math.ceil(res.total / res.per_page) || 1
       })
     },
     switchTab(value) {
@@ -199,7 +199,7 @@ export default {
       this.nowCateId = ''
       this.firstSearchText = ''
       let fn = newValue === 'applying' ? this.getActivity : this.getJoinedActivity
-      fn()
+      fn(1)
     }
   },
   onReachBottom() {

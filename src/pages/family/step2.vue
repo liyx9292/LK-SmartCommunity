@@ -38,10 +38,10 @@
         </view>
       </view>
       <view class="step-label">
-        接种疫苗备注
+        接种疫苗剂次
       </view>
       <view class="step-input-container">
-        <input class="step-input" placeholder="请输入疫苗备注" v-model="inputYimiaoDesc" maxlength="20"/>
+        <input class="step-input" placeholder="请输入接种疫苗剂次" v-model="inputYimiaoDesc" maxlength="20"/>
       </view>
 
       <!-- 添加家庭成员列表 -->
@@ -58,7 +58,8 @@
           <view class="user-id">
             {{ member[modalDataKey.modalInputId.myKey] }}
           </view>
-          <image class="user-delete" src="/static/icon/" @click="deleteMember(index)"/>
+          <image class="user-delete user-edit" src="/static/icons/icon_edit.png" @click="editMember(index)"/>
+          <image class="user-delete" src="/static/icons/icon_delete.png" @click="deleteMember(index)"/>
         </view>
         <!-- 添加 -->
         <view class="increase-block">
@@ -73,7 +74,7 @@
     <!-- 添加模态框 -->
     <view class="modal-block user-block" id="modal-block" v-if="showModal">
       <view class="step-label">
-        业主姓名
+        成员姓名
       </view>
       <view class="step-input-container">
         <input class="step-input" placeholder="请输入业主姓名" v-model="modalInputName" maxlength="10"/>
@@ -108,10 +109,10 @@
         </view>
       </view>
       <view class="step-label">
-        接种疫苗备注
+        接种疫苗剂次
       </view>
       <view class="step-input-container">
-        <input class="step-input" placeholder="请输入疫苗备注" v-model="modalInputYimiaoDesc" maxlength="20"/>
+        <input class="step-input" placeholder="请输入接种疫苗剂次" v-model="modalInputYimiaoDesc" maxlength="20"/>
       </view>
       <button class="modal-button" @click="confirmAddUser">添加成员</button>
     </view>
@@ -165,6 +166,7 @@ export default {
       modalInputId: '',
       modalInputYimiao: '',
       modalInputYimiaoDesc: '',
+      editIndex: null,
     }
   },
   mounted() {
@@ -191,8 +193,6 @@ export default {
     },
     nextStep() {
       let ownerData = this.inputRealData
-      console.log(ownerData)
-      debugger
       let result = this.validateUser(ownerData)
       if (!result.isPass) {
         if (result.errMsg) {
@@ -202,6 +202,10 @@ export default {
             mask: true,
           })
         }
+        return
+      }
+      if (this.familyMember.length === 0) {
+        this.utils.showModal('信息不足','至少要有一位家庭成员')
         return
       }
       let step2Data = { ownerData, familyMember: this.familyMember }
@@ -245,8 +249,12 @@ export default {
         return
       }
       data.attrType = 1
+      if (this.editIndex || this.editIndex === 0) {
+        this.deleteMember(this.editIndex)
+      }
       this.familyMember.push(data)
       this.showModal = false
+      this.editIndex = null
       this.defaultModalData()
     },
     validateUser(data, pretext = '') {
@@ -277,6 +285,15 @@ export default {
       let memberArr = this.familyMember
       memberArr.splice(index, 1)
       this.familyMember = memberArr
+    },
+    editMember(index) {
+      let memberItem = this.familyMember[index]
+      for (let i in modalDataKey) {
+        let keyName = modalDataKey[i].myKey
+        this[i] = memberItem[keyName]
+      }
+      this.showModal = true
+      this.editIndex = index
     }
   },
   computed: {
@@ -401,6 +418,13 @@ export default {
         height: 42rpx;
         position: absolute;
         right: 30rpx;
+        top: 40rpx;
+      }
+      .user-edit {
+        width: 42rpx;
+        height: 42rpx;
+        position: absolute;
+        right: 80rpx;
         top: 40rpx;
       }
     }

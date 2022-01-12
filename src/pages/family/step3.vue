@@ -19,7 +19,7 @@
     <!-- 紧急联系人 -->
     <view class="block">
       <view class="label">
-        家中是否有70岁以上需要特殊关怀的老人
+        家中是否有80岁以上需要特殊关怀的老人
       </view>
       <view class="user-container">
         <view class="user-item special-user" :class="{actUser: oldList.includes(index)}" v-for="(item, index) in familyMember" :key="index" @click="setSpecial(index, 'oldList')">

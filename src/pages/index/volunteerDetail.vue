@@ -194,15 +194,7 @@ export default {
     submitSearch(e) {
       console.log(e)
     },
-    handleSignIn(id) {
-      uni.showModal({
-        title: '代签到',
-        content: '是否代签到？',
-        success: () => {
-          console.log('成功')
-        }
-      })
-    },
+
     memberSignIn(member) {
       this.utils.showModal('代签到', '该人员是否已到场', true, () => {
         let params = {
