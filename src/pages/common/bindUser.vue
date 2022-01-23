@@ -13,7 +13,7 @@
           <view class="form-label">
             姓名
           </view>
-          <input class="form-input" name="uname" placeholder="请输入姓名" :value="uname"/>
+          <input class="form-input" name="uname" placeholder="请输入姓名"/>
         </view>
         <view class="form-item">
           <view class="form-label">
@@ -26,13 +26,17 @@
           <view class="form-label">
             身份证号
           </view>
-          <input class="form-input" name="idCardNo" placeholder="请输入身份证号" type="idcard" maxlength="18" :value="idCardNo"/>
+          <input class="form-input" name="idCardNo" placeholder="请输入身份证号" type="idcard" maxlength="18"/>
         </view>
         <view class="form-item">
           <view class="form-label">
-            家庭住址
+            性别
           </view>
-          <input class="form-input" name="address" placeholder="请输入家庭住址" maxlength="50"/>
+          <picker mode="selector" :range="gender" range-key="label" name="sex" @change="selectGender">
+            <view class="form-input">
+              {{ sex || '请选择性别' }}
+            </view>
+          </picker>
         </view>
       </view>
       <button form-type="submit" class="submit-button" :disabled="submitLoading">提交</button>
@@ -58,7 +62,6 @@
   </view>
 </template>
 <script>
-import { default as Constants } from '@/Utils/constants'
 export default {
 // TODO finish: 手机号的修改, 默认锁死，点击修改才能修改
   data() {
@@ -66,16 +69,15 @@ export default {
       submitLoading: false,
       uname: '',
       mobile: '',
-      idCardNo: '',
+      gender: [{label: '男', value: 1}, {label: '女', value: 2}],
+      sex: '',
     }
   },
-  onLoad() {
-    let userInfo = this.utils.getStorage(Constants.USER_INFO)
-    this.uname = userInfo.uname
-    this.mobile = userInfo.mobile
-    this.idCardNo = userInfo.idCardNo
-  },
   methods: {
+    selectGender(e) {
+      let index = e.detail.value
+      this.sex = this.gender[index].label
+    },
     submitForm(e) {
       this.submitLoading = true
       let data = e.detail.value
@@ -85,9 +87,10 @@ export default {
         this.submitLoading = false
         return
       }
-      this.services.post('/applyVolunteer', data)
+      data.sex = this.gender[data.sex].value
+      this.services.post('/userAuth.html', data)
       .then(res => {
-        this.utils.showToast('提交成功', 'success', () => uni.navigateBack(), 2500)
+        this.utils.showToast('绑定成功', 'success', () => uni.reLaunch({url: '/pages/index/index'}), 2500)
         this.submitLoading = false
       })
       .catch(res => {

@@ -93,10 +93,22 @@
 			}
 		},
 		{
+			"path": "pages/user/order", //订单中心
+			"style": {
+				"navigationBarTitleText": "订单中心"
+			}
+		},
+		{
 			"path": "pages/common/auth", //授权页面
 			"style": {
 				"navigationBarTitleText": "授权页面",
 				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/common/bindUser", //个人信息绑定
+			"style": {
+				"navigationBarTitleText": "个人信息绑定"
 			}
 		}
 	],

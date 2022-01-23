@@ -66,6 +66,14 @@
       </view>
     </view>
 
+    <!-- 订单中心 -->
+    <view class="order-flex" @click="jumpOrder">
+      <image class="order-bg" src="/static/user/user_order.png" />
+      <view class="order-text">
+        订单中心
+      </view>
+    </view>
+
     <Tabbar />
   </view>
 </template>
@@ -110,6 +118,9 @@ export default {
       .then(res => {
 
       })
+    },
+    jumpOrder() {
+      this.utils.jumpPage(`/pages/user/order`)
     }
   }
 }
@@ -264,6 +275,27 @@ export default {
   text-align: center;
   view {
     margin-bottom: 8rpx;
+  }
+}
+
+// 订单
+.order-flex {
+  position: fixed;
+  bottom: 140rpx;
+  right: 26rpx;
+  height: 130rpx;
+  width: 120rpx;
+  .order-bg {
+    width: 100%;
+    height: 100%;
+  }
+  .order-text {
+    position: absolute;
+    top: 50rpx;
+    left: 17rpx;
+    font-size: 24rpx;
+    color: $basic-color;
+    z-index: 2;
   }
 }
 </style>

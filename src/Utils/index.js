@@ -26,6 +26,13 @@ function jumpPage(url, isRedirect) {
     uni.navigateTo({ url: '/pages/common/auth'})
     return
   }
+  // 判定是否绑定有个人信息
+  if (!userInfo.mobile) {
+    showModal('绑定个人信息', '正常使用小程序需要绑定您的个人信息，点击确认开始绑定', true, () => {
+      uni.navigateTo({ url: '/pages/common/bindUser'})
+    })
+    return
+  }
   jumpFn({
     url: url,
   })
@@ -68,6 +75,10 @@ function login(userInfo, isAuth) {
         signature: userInfo.signature,
       }
       let getToken = await requestLogin(params)
+      if (getToken.userinfo.family_id) {
+        let familyInfo = await request('/getFamilyInfo.html', { family_id: family_id }, 'post')
+        getToken.userinfo.familyInfo = familyInfo
+      }
       setStorage(Constants.TOKEN, getToken.token)
       setStorage(Constants.USER_INFO, getToken.userinfo)
       resolve(true)

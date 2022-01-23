@@ -16,7 +16,7 @@
         </view>
       </view>
     </view>
-    <!-- 紧急联系人 -->
+    <!-- 有老人 -->
     <view class="block">
       <view class="label">
         家中是否有80岁以上需要特殊关怀的老人
@@ -25,6 +25,19 @@
         <view class="user-item special-user" :class="{actUser: oldList.includes(index)}" v-for="(item, index) in familyMember" :key="index" @click="setSpecial(index, 'oldList')">
           <view class="user-name">
             {{ item.uname }}
+          </view>
+        </view>
+      </view>
+    </view>
+    <!-- 是否为空巢老人 -->
+    <view class="block" v-if="oldList.length > 0">
+      <view class="label">
+        是否为空巢老人
+      </view>
+      <view class="user-container">
+        <view class="user-item special-user" :class="{actUser: is_empty_nest === item}" v-for="item in [1, 0]" :key="item" @click="setNest(item)">
+          <view class="user-name">
+            {{ item === 1 ? '是' : '否' }}
           </view>
         </view>
       </view>
@@ -49,6 +62,7 @@ export default {
       familyMember: [],
       warningList: [],
       oldList: [],
+      is_empty_nest: null,
     }
   },
   mounted() {
@@ -58,6 +72,9 @@ export default {
   methods: {
     prevStep() {
       this.$emit('prevStep')
+    },
+    setNest(item) {
+      this.is_empty_nest = item;
     },
     setSpecial(index, key) {
       let arr = this[key]
@@ -78,9 +95,14 @@ export default {
         this.utils.showToast('紧急联系人为空', 'error', () => {}, 2000)
         return
       }
+      if (this.oldList.length > 0 && !this.is_empty_nest) {
+        this.utils.showToast('是否为空巢老人', 'error', () => {}, 2000)
+        return
+      }
       let step3Data = {
         warningList: this.warningList,
         oldList: this.oldList,
+        is_empty_nest: this.is_empty_nest || 0,
       }
       this.$emit('nextStep', step3Data, 'step3Data')
     }

@@ -80,17 +80,19 @@
 			</cell>
 		</list>
 		<Tabbar/>
-		<!-- <view @click="test">test</view> -->
+
+		<Tips :showModal="showModal" @jumpPage="confirmVolunteer"/>
 	</view>
 </template>
 
 <script>
   import Tabbar from '@/Components/Tabbar.Component.vue'
 	import config from '@/config'
+	import Tips from './volunteerTips.vue'
 	import { default as Constants } from '@/Utils/constants'
 	export default {
 		components: {
-			Tabbar,
+			Tabbar, Tips,
 		},
 		data() {
 			return {
@@ -104,6 +106,7 @@
 				],
 				tips: [],
 				newsList: [],
+				showModal: false,
 			}
 		},
 		onLoad() {
@@ -131,6 +134,12 @@
 				// 	}
 				// })
 			},
+			confirmVolunteer(bool) {
+				this.showModal = false
+				if (bool) {
+					this.utils.jumpPage('/pages/index/volunteerApply')
+				}
+			},
 			jumpPage(item) {
 				if (item.id === 1) {
 					let userInfo = this.utils.getStorage(Constants.USER_INFO)
@@ -140,10 +149,10 @@
 					} else if (userInfo.is_volunteer === 1) {
 						this.utils.showModal('审核中', '请等待审核结果', false)
 						return
+					} else {
+						this.showModal = true
+						return
 					}
-				// } else if (item.id === 4) {
-				// 	this.utils.showModal('提示', '该功能未开放')
-				// 	return
 				}
 				let hasSubscribe = this.utils.getStorage(Constants.HAS_SUBSCRIBE)
 				if (!hasSubscribe) {
